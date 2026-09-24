@@ -1,0 +1,25 @@
+{
+  "name": "portfolio-server",
+  "version": "1.0.0",
+  "description": "Express + MongoDB backend for Mohan Kumar Dalei portfolio",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "seed": "node -e \"require('dotenv').config();require('./config/db')().then(()=>require('./seed')()).then(()=>process.exit(0))\""
+  },
+  "dependencies": {
+    "@google/genai": "^2.21.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.0",
+    "multer": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

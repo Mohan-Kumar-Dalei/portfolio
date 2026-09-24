@@ -1,0 +1,680 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   Cinematic theme
+   Deep night background, bright ink, violet → fuchsia light.
+   Token names are shared with tailwind.config.js.
+   ───────────────────────────────────────────────────────────── */
+:root,
+.dark {
+  --bg: #07060b;
+  --surface: #0f0d16;
+  --card: #121019;
+  --border: rgba(244, 242, 248, 0.1);
+  --border-strong: rgba(244, 242, 248, 0.26);
+  --accent: #a78bfa;
+  --accent-soft: #c4b5fd;
+  --accent-contrast: #07060b;
+  --text: #f4f2f8;
+  --text-secondary: #9a96a8;
+  --chip: rgba(244, 242, 248, 0.05);
+  --glass-bg: rgba(244, 242, 248, 0.03);
+  --glass-border: rgba(244, 242, 248, 0.09);
+  --grad: linear-gradient(100deg, #6d28d9 0%, #8b5cf6 50%, #c4b5fd 100%);
+  --glow: rgba(139, 92, 246, 0.35);
+}
+
+.light {
+  --bg: #f4f2f8;
+  --surface: #ebe7f3;
+  --card: #ffffff;
+  --border: rgba(12, 10, 20, 0.12);
+  --border-strong: rgba(12, 10, 20, 0.28);
+  --accent: #6d28d9;
+  --accent-soft: #8b5cf6;
+  --accent-contrast: #ffffff;
+  --text: #0c0a14;
+  --text-secondary: #5b5670;
+  --chip: rgba(12, 10, 20, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(12, 10, 20, 0.08);
+  --grad: linear-gradient(100deg, #4c1d95 0%, #6d28d9 50%, #8b5cf6 100%);
+  --glow: rgba(109, 40, 217, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * Fluid root size for large monitors. Everything is rem-based, so scaling
+ * the root lets the whole layout grow with the screen. Phones/laptops: 16px.
+ *   1536px -> ~16.5px   1920px -> ~18.6px   2560px -> 22px   3840px+ -> 24px
+ */
+html {
+  font-size: 16px;
+}
+@media (min-width: 1536px) {
+  html {
+    font-size: clamp(16px, calc(0.536vw + 8.28px), 24px);
+  }
+}
+/* Lucide icons take a fixed pixel `size`, so bump them to match the root. */
+@media (min-width: 1900px) {
+  svg.lucide {
+    zoom: 1.15;
+  }
+}
+@media (min-width: 2400px) {
+  svg.lucide {
+    zoom: 1.35;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Inter Tight", "Inter", sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.font-display {
+  font-family: "Syne", "Inter Tight", sans-serif;
+}
+.font-body {
+  font-family: "Inter Tight", "Inter", sans-serif;
+}
+.font-mono {
+  font-family: "JetBrains Mono", monospace;
+}
+.font-serif,
+.serif {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 6px;
+}
+
+/* ── Layout primitives ─────────────────────────────────────── */
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-[90rem] px-5 md:px-8 lg:px-12;
+    /* Titles size in cqi, i.e. relative to this column, so a heading fits the
+       same way on a phone, a laptop and a 27" screen. */
+    container-type: inline-size;
+  }
+  .label {
+    @apply font-mono text-[0.6875rem] uppercase tracking-[0.16em];
+  }
+}
+
+/* Gradient ink — the single accent of the theme. */
+.text-gradient {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* Inside headings the accent word switches to an italic serif. */
+h1 .text-gradient,
+h2 .text-gradient,
+h3 .text-gradient,
+.accent-serif {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  padding-right: 0.06em;
+}
+
+.bg-grad {
+  background: var(--grad);
+}
+
+/* Frosted panel */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+}
+
+.glow-primary {
+  box-shadow: 0 30px 80px -30px var(--glow);
+}
+
+/* Animated underline link */
+.u-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.u-link:hover,
+.group:hover .u-link {
+  background-size: 100% 1px;
+  background-position: 0% 100%;
+}
+.u-link-static {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+}
+
+/* Text-roll hover: two stacked copies slide up. */
+.roll {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  line-height: 1.2;
+  height: 1.2em;
+}
+.roll > span {
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.roll:hover > span,
+.group:hover .roll > span {
+  transform: translateY(-100%);
+}
+
+/* Split lines get their own mask wrapper from GSAP SplitText. */
+.split-line {
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+[data-split] {
+  visibility: hidden;
+}
+
+/* ── Cursor: a single blend-mode dot that swells over links ── */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.cursor-ready .cursor-dot,
+.cursor-ready .cursor-ring {
+  opacity: 1;
+}
+.cursor-dot {
+  z-index: 10000;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+.cursor-ring {
+  z-index: 9999;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+}
+.cursor-ring.is-hover {
+  width: 56px;
+  height: 56px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: var(--accent);
+}
+.cursor-ring.is-view {
+  width: 88px;
+  height: 88px;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.cursor-ring.is-down {
+  width: 26px;
+  height: 26px;
+}
+.cursor-ring .cursor-label {
+  font: 600 0.6875rem/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-contrast);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.cursor-ring.is-view .cursor-label {
+  opacity: 1;
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.light .noise-overlay {
+  opacity: 0.035;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.animate-blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+/* ── Article typography ───────────────────────────────────── */
+.prose-blog {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+.prose-blog h2 {
+  color: var(--text);
+  font-family: "Inter Tight", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 3rem 0 1rem;
+  scroll-margin-top: 100px;
+}
+.prose-blog h3 {
+  color: var(--text);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  font-weight: 400;
+  margin: 2.25rem 0 0.75rem;
+  scroll-margin-top: 100px;
+}
+.prose-blog p {
+  margin: 1.2rem 0;
+}
+.prose-blog a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-blog ul,
+.prose-blog ol {
+  margin: 1.2rem 0;
+  padding-left: 1.4rem;
+}
+.prose-blog ul {
+  list-style: square;
+}
+.prose-blog ol {
+  list-style: decimal;
+}
+.prose-blog li {
+  margin: 0.4rem 0;
+}
+.prose-blog blockquote {
+  border-left: 2px solid var(--accent);
+  padding-left: 1.4rem;
+  margin: 2rem 0;
+  color: var(--text);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+.prose-blog code:not(pre code) {
+  background: var(--chip);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+.prose-blog pre {
+  background: #14120f !important;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.25rem !important;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  font-size: 0.85rem;
+}
+.prose-blog img {
+  border-radius: 0.5rem;
+  margin: 1.75rem 0;
+}
+
+/* Tailwind can't apply /opacity to var() colours, so mix them here. */
+.nav-scrolled {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.tint-accent {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+/* ── Page entrance (components/PageTransition.jsx) ────────── */
+.page-curtain {
+  transform-origin: top;
+  animation: page-curtain-lift 0.75s cubic-bezier(0.76, 0, 0.24, 1) 0.05s both;
+}
+.page-enter {
+  /* backwards: hidden until it starts, and no lingering fill afterwards */
+  animation: page-fade-in 0.8s ease 0.3s backwards;
+}
+@keyframes page-curtain-lift {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0); visibility: hidden; }
+}
+.nav-enter {
+  animation: nav-drop-in 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.1s backwards;
+}
+@keyframes nav-drop-in {
+  from { transform: translateY(-100px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-curtain { animation-duration: 0.01s; }
+  .page-enter { animation-duration: 0.01s; animation-delay: 0s; }
+}
+
+/* ── Cinematic extras ─────────────────────────────────────── */
+/* Outlined display numerals. -webkit-text-stroke traces every contour of
+   Syne's variable glyphs, including the overlapping ones inside a letter
+   (the stray lines through "0" and "4"). Instead the glyph is drawn solid and
+   the #text-outline SVG filter (Layout.jsx) keeps only a 1px ring grown
+   around its silhouette, so the outline follows the outer shape alone. */
+.text-outline {
+  color: color-mix(in srgb, var(--text) 45%, transparent);
+  filter: url(#text-outline);
+}
+/* Soft violet light. The falloff is baked into the gradient (it reaches full
+   transparency at the element's edge) instead of a blur() filter: the blur
+   spilled past the box and got cut by the section's overflow into a hard,
+   rectangular edge that looked like a panel seam. */
+.glow-blob {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent) 48%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 26%, transparent) 35%,
+    color-mix(in srgb, var(--accent) 9%, transparent) 68%,
+    transparent 100%
+  );
+}
+.vignette {
+  background: radial-gradient(ellipse at center, transparent 40%, var(--bg) 100%);
+}
+.fade-b {
+  background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+}
+.chip-accent {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.title-xl {
+  font-family: "Syne", "Inter Tight", sans-serif;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  /* Syne is very wide; a word longer than the line may break rather than clip */
+  overflow-wrap: anywhere;
+}
+.title-xl .text-gradient,
+.title-xl .accent-serif {
+  text-transform: none;
+  letter-spacing: -0.03em;
+}
+@keyframes scrollcue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+/* Skills rows: outlined until the row reaches the middle of the screen, then
+   a gradient copy of the word wipes in over the outline. */
+.skill-word .text-outline {
+  transition: opacity 0.6s ease 0.3s;
+}
+.skill-fill {
+  color: transparent;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.skill-row.is-active .skill-fill {
+  background-size: 100% 100%;
+}
+.skill-row.is-active .skill-word .text-outline {
+  opacity: 0;
+}
+.skill-row.is-active .skill-chip {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* ── Liquid glass (see components/LiquidGlass.jsx) ─────────────
+   The backdrop is refracted by the SVG filter; these layers add the thin
+   tint, the glassy inner edges and the lift shadow. */
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  /* frost + inner-edge stack after the "Liquid Glass Distortion Card" demo */
+  background: color-mix(in srgb, var(--bg) 34%, transparent);
+  box-shadow:
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.35),
+    inset 0 0 10px 4px rgba(255, 255, 255, 0.12),
+    inset 0 4px 16px rgba(17, 17, 26, 0.05),
+    inset 0 8px 24px rgba(17, 17, 26, 0.05),
+    inset 0 6px 56px rgba(17, 17, 26, 0.05),
+    0 14px 36px -10px rgba(0, 0, 0, 0.45);
+}
+.light .liquid-glass {
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  box-shadow:
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.9),
+    inset 0 0 10px 4px rgba(255, 255, 255, 0.45),
+    inset 0 4px 16px rgba(17, 17, 26, 0.05),
+    inset 0 8px 24px rgba(17, 17, 26, 0.05),
+    inset 0 6px 56px rgba(17, 17, 26, 0.05),
+    0 14px 36px -12px rgba(30, 10, 60, 0.28);
+}
+
+/* Deep violet, used for the footer wordmark */
+:root, .dark { --deep: #7c3aed; }
+.light { --deep: #4c1d95; }
+.text-deep { color: var(--deep); }
+
+/* CosmosGen card: a slowly rotating violet beam behind a 1.5px gap = moving border */
+.cosmos-spin {
+  background: conic-gradient(from 0deg, transparent 0deg, var(--accent) 60deg, transparent 120deg, transparent 180deg, var(--accent-soft) 240deg, transparent 300deg);
+  animation: cosmos-spin 6s linear infinite;
+}
+@keyframes cosmos-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cosmos-spin {
+    animation: none;
+  }
+}
+
+/* ── Navbar glass (after fooontic's "Liquid Glass Switcher. CSS", MIT) ──
+   Glass tints and reflex strengths per theme drive the layered edge shadows. */
+:root, .dark {
+  --sw-glass: #bbbbbc;
+  --sw-light: #fff;
+  --sw-dark: #000;
+  --reflex-light: 0.3;
+  --reflex-dark: 2;
+}
+.light {
+  --reflex-light: 1;
+  --reflex-dark: 1;
+}
+
+.liquid-glass.glass-switch {
+  background: color-mix(in srgb, var(--sw-glass) 12%, color-mix(in srgb, var(--bg) 22%, transparent));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--sw-light) calc(var(--reflex-light) * 10%), transparent),
+    inset 1.8px 3px 0 -2px color-mix(in srgb, var(--sw-light) calc(var(--reflex-light) * 90%), transparent),
+    inset -2px -2px 0 -2px color-mix(in srgb, var(--sw-light) calc(var(--reflex-light) * 80%), transparent),
+    inset -3px -8px 1px -6px color-mix(in srgb, var(--sw-light) calc(var(--reflex-light) * 60%), transparent),
+    inset -0.3px -1px 4px 0 color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 12%), transparent),
+    inset -1.5px 2.5px 0 -2px color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 20%), transparent),
+    inset 0 3px 4px -2px color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 20%), transparent),
+    inset 2px -6.5px 1px -4px color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 10%), transparent),
+    0 1px 5px 0 color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 10%), transparent),
+    0 6px 16px 0 color-mix(in srgb, var(--sw-dark) calc(var(--reflex-dark) * 8%), transparent);
+  transition: background-color 400ms cubic-bezier(1, 0, 0.4, 1), box-shadow 400ms cubic-bezier(1, 0, 0.4, 1);
+}
+
+/* hover pill that glides between nav links */
+.nav-pill {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* Page cap: the rounded bottom edge of the page (see Layout.jsx). */
+.page-cap {
+  background-color: var(--bg);
+  /* soft lift; a heavy black shadow turned into a muddy band on the dark footer */
+  box-shadow: 0 28px 50px -30px rgba(0, 0, 0, 0.35);
+}
+.dark .page-cap {
+  box-shadow: 0 22px 44px -28px rgba(0, 0, 0, 0.55);
+}
+/* When the page ends with the "Let's talk" scene, the cap takes the same solid
+   deep violet so the section itself appears to lift off, with no visible seam. */
+main:has([data-testid="cta-section"]) + .page-cap {
+  background-color: var(--cta);
+  /* light theme: a neutral dark lift; dark theme: a violet glow (below) */
+  box-shadow: 0 26px 50px -26px rgba(0, 0, 0, 0.45);
+}
+.dark main:has([data-testid="cta-section"]) + .page-cap {
+  box-shadow: 0 26px 60px -26px color-mix(in srgb, var(--cta) 70%, transparent);
+}
+
+/* Glossy reflection across the top of the liquid-glass surface */
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 140% at 18% -30%, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.08) 38%, transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 48%, rgba(255, 255, 255, 0.05) 100%);
+}
+.light .liquid-glass::before {
+  background:
+    radial-gradient(120% 140% at 18% -30%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.2) 38%, transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 48%, rgba(255, 255, 255, 0.15) 100%);
+}
+
+/* Clear state of a liquid-glass surface (navbar at the top of the page). */
+.liquid-glass {
+  transition: background-color 0.45s ease, box-shadow 0.45s ease;
+}
+.liquid-glass::before {
+  transition: opacity 0.45s ease;
+}
+.liquid-glass.liquid-plain {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.liquid-glass.liquid-plain::before {
+  opacity: 0;
+}
+
+/* "Let's talk" scene: one solid deep violet (a gradient could never line up
+   with the page cap below it). */
+:root, .dark { --cta: #5b21b6; }
+.light { --cta: #4c1d95; }
+.bg-cta { background-color: var(--cta); }
+
+/* Custom dropdown (components/Dropdown.jsx) */
+.dropdown-trigger {
+  background: var(--chip);
+}
+.dropdown-menu {
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.dropdown-hl {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}

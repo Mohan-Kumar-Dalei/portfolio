@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# builds
+frontend/dist/
+
+# secrets (set these in the Vercel dashboard instead)
+.env
+.env.*
+!.env.example
+
+# local-only
+backend/uploads/*
+!backend/uploads/.gitkeep
+_backup_*/
+.claude/
+.vercel/
+
+# logs / OS
+*.log
+.DS_Store
+Thumbs.db

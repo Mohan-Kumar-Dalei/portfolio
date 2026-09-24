@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="theme-color" content="#f4f2f8" />
+    <!-- Apply the saved theme before first paint (light by default), so there is no dark flash. -->
+    <script>
+      try {
+        var t = localStorage.getItem("mkd_theme_v4");
+        if (t === "dark") document.documentElement.className = "dark";
+      } catch (e) {}
+    </script>
+    <meta name="robots" content="index, follow" />
+
+    <title>Mohan Kumar Dalei | MERN Stack Developer & Technical Analyst</title>
+    <meta
+      name="description"
+      content="Mohan Kumar Dalei | MERN Stack Developer specialising in Agentic AI. Building premium, high-performance full-stack web experiences with React, Node.js, Express and MongoDB."
+    />
+    <meta name="keywords" content="Mohan Kumar Dalei, MERN Developer, Full Stack Developer, React, Node.js, MongoDB, Agentic AI, Technical Analyst" />
+    <meta name="author" content="Mohan Kumar Dalei" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mohan Kumar Dalei | MERN Stack Developer & Technical Analyst" />
+    <meta property="og:description" content="Premium full-stack MERN developer specialising in Agentic AI. Explore my work, skills and experience." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1687560466164-1eeddb3b119b?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200" />
+    <meta property="og:site_name" content="Mohan Kumar Dalei" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mohan Kumar Dalei | MERN Stack Developer" />
+    <meta name="twitter:description" content="Premium full-stack MERN developer specialising in Agentic AI." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter+Tight:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
