@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import ChatBot from "./ChatBot";
 import AmbientControls from "./AmbientControls";
+import SoundIntro from "./SoundIntro";
 
 // Site-wide floating widgets — hidden on the admin area to avoid UI collisions.
 const SiteWidgets = () => {
@@ -10,6 +11,7 @@ const SiteWidgets = () => {
     <>
       <ChatBot />
       <AmbientControls />
+      <SoundIntro />
     </>
   );
 };

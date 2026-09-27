@@ -68,17 +68,35 @@ const handleUpload = async (req, res) => {
   res.json({ url, field });
 };
 
-// GET /api/files/:id — stream a stored upload back.
+// GET /api/files/:id — send a stored upload back. Supports Range requests,
+// which browsers need to seek within an audio track.
 const serveFile = async (req, res) => {
   const file = await File.findById(req.params.id);
   if (!file) return res.status(404).json({ message: "File not found" });
+  const data = file.data;
+  const total = data.length;
   res.set({
     "Content-Type": file.mime,
-    "Content-Length": file.size,
+    "Accept-Ranges": "bytes",
     "Content-Disposition": `inline; filename="${encodeURIComponent(file.filename)}"`,
     "Cache-Control": "public, max-age=86400, immutable",
   });
-  res.send(file.data);
+
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+  if (m && (m[1] || m[2])) {
+    let start = m[1] ? parseInt(m[1], 10) : total - parseInt(m[2], 10); // "bytes=-500" = last 500
+    let end = m[1] && m[2] ? parseInt(m[2], 10) : total - 1;
+    start = Math.max(0, start);
+    end = Math.min(end, total - 1);
+    if (start > end || start >= total) {
+      res.set("Content-Range", `bytes */${total}`);
+      return res.status(416).end();
+    }
+    res.status(206).set({ "Content-Range": `bytes ${start}-${end}/${total}`, "Content-Length": end - start + 1 });
+    return res.end(data.subarray(start, end + 1));
+  }
+  res.set("Content-Length", total);
+  res.end(data);
 };
 
 module.exports = { uploadMiddleware, handleUpload, serveFile, MAX_MB };

@@ -83,6 +83,7 @@ const Layout = () => {
   const handleReady = () => {
     setLoading(false);
     sessionStorage.setItem("mkd_preloaded", "1");
+    window.dispatchEvent(new Event("mkd:preloaded")); // SoundIntro waits for this
     setTimeout(() => ScrollTrigger.refresh(), 300);
   };
 
