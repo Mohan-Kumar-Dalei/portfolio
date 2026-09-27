@@ -3,7 +3,7 @@
   "private": true,
   "description": "Mohan Kumar Dalei portfolio: React (Vite) client + Express/MongoDB API, deployed together on Vercel.",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "install:all": "npm install --prefix frontend && npm install --prefix backend",
