@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/api";
+import { parseSpotify } from "../lib/spotify";
 import PageTransition from "../components/PageTransition";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -128,8 +129,15 @@ const AdminDashboard = () => {
     setSaving(true);
     setError("");
     try {
+      // Spotify: accept a share link or the whole embed code, store the clean link.
+      const rawSpotify = String(settings.spotifyUrl || "").trim();
+      const spotify = parseSpotify(rawSpotify);
+      if (rawSpotify && !spotify) {
+        setError("That Spotify link wasn't recognised. Paste a track, playlist or album link (or its embed code).");
+        return;
+      }
       // An empty key field means "keep the saved key", so it is not sent.
-      const { geminiApiKey, hasGeminiKey, ...rest } = settings;
+      const { geminiApiKey, hasGeminiKey, ...rest } = { ...settings, spotifyUrl: spotify ? spotify.url : "" };
       const { data } = await api.put("/settings", geminiApiKey ? { ...rest, geminiApiKey } : rest);
       setSettings(data);
       setSavedFlash(true);
@@ -317,6 +325,10 @@ const AdminDashboard = () => {
                 onPick={(f) => uploadFile("music", f)}
                 testid="upload-music"
               />
+              {/(spotify\.com|youtube\.com|youtu\.be)/i.test(settings.musicUrl || "") && (
+                <p className="text-xs text-rose-500 font-mono -mt-2">This field needs a direct audio file (.mp3). For Spotify, use the field below.</p>
+              )}
+              <SpotifyField value={settings.spotifyUrl} onChange={(v) => setSetting("spotifyUrl", v)} />
               <div>
                 <Input label="Gemini API Key (leave blank to keep the saved one)" type="password" value={settings.geminiApiKey} onChange={(v) => setSetting("geminiApiKey", v)} testid="set-gemini" />
                 <p className="text-xs text-ink-muted mt-1 font-mono">{settings.hasGeminiKey ? "A key is saved. Enter a new one to replace it." : "No key saved. Set GEMINI_API_KEY on the server, or paste one here."}</p>
@@ -409,6 +421,35 @@ const RowActions = ({ onEdit, onDelete, editTestid, delTestid }) => (
     <button onClick={onDelete} className="grid h-9 w-9 place-items-center rounded-full border border-border hover:border-red-400 hover:text-red-400 transition-colors duration-200" data-testid={delTestid}><Trash2 size={14} /></button>
   </div>
 );
+
+// Spotify link or embed code, with a live check of what was pasted.
+const SpotifyField = ({ value, onChange }) => {
+  const raw = String(value || "").trim();
+  const parsed = parseSpotify(raw);
+  return (
+    <div>
+      <Input label="Spotify song / playlist (link or embed code)" value={value} onChange={onChange} testid="set-spotify" />
+      <p className={`text-xs mt-1 font-mono ${raw && !parsed ? "text-rose-500" : "text-ink-muted"}`}>
+        {!raw
+          ? "Leave empty to use the MP3 above. When set, the site's music button opens a Spotify player instead."
+          : parsed
+            ? `Spotify ${parsed.type} detected · ${parsed.url}`
+            : "Not a Spotify track, playlist or album link."}
+      </p>
+      {parsed && (
+        <iframe
+          title="Spotify preview"
+          src={`https://open.spotify.com/embed/${parsed.type}/${parsed.id}?utm_source=generator`}
+          width="100%"
+          height="152"
+          loading="lazy"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          className="mt-3 block rounded-xl border-0"
+        />
+      )}
+    </div>
+  );
+};
 
 const Input = ({ label, value, onChange, testid, type = "text" }) => (
   <div>

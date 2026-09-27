@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { useSite } from "./SiteContext";
 import { fileUrl } from "../lib/api";
+import { parseSpotify } from "../lib/spotify";
 
 const SoundContext = createContext(null);
 
@@ -10,6 +11,12 @@ export const SoundProvider = ({ children }) => {
   const audioRef = useRef(null);
   const acRef = useRef(null);
   const lastTick = useRef(0);
+  // A Spotify link from the admin replaces the MP3: its player card opens from
+  // the sound button instead (see AmbientControls). Not persisted, so the card
+  // never pops up on its own when a visitor comes back.
+  const spotify = parseSpotify(settings?.spotifyUrl);
+  const spotifyLink = spotify?.url || "";
+  const [playerOpen, setPlayerOpen] = useState(false);
 
   useEffect(() => {
     if (!audioRef.current) {
@@ -19,11 +26,11 @@ export const SoundProvider = ({ children }) => {
       audioRef.current = a;
     }
     const a = audioRef.current;
-    const url = fileUrl(settings?.musicUrl);
+    const url = spotifyLink ? "" : fileUrl(settings?.musicUrl);
     if (url && !a.src.includes(encodeURI(url).slice(0, 20))) a.src = url;
     if (enabled && url) a.play().catch(() => {});
     else a.pause();
-  }, [enabled, settings]);
+  }, [enabled, settings, spotifyLink]);
 
   useEffect(() => {
     localStorage.setItem("mkd_sound", enabled ? "1" : "0");
@@ -68,9 +75,9 @@ export const SoundProvider = ({ children }) => {
   }, [playTick]);
 
   const toggle = () => setEnabled((v) => !v);
-  const hasMusic = !!settings?.musicUrl;
+  const hasMusic = !!settings?.musicUrl && !spotify;
 
-  return <SoundContext.Provider value={{ enabled, toggle, hasMusic }}>{children}</SoundContext.Provider>;
+  return <SoundContext.Provider value={{ enabled, setEnabled, toggle, hasMusic, spotify, playerOpen, setPlayerOpen }}>{children}</SoundContext.Provider>;
 };
 
 export const useSound = () => useContext(SoundContext);

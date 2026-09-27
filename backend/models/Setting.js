@@ -11,6 +11,8 @@ const settingSchema = new mongoose.Schema(
     github: { type: String, default: "https://github.com/Mohan-Kumar-Dalei" },
     linkedin: { type: String, default: "https://www.linkedin.com/in/mohan-kumar-dalei" },
     musicUrl: { type: String, default: "" },
+    // open.spotify.com/{track|playlist|album|episode|show}/{id}; shown as an embedded player
+    spotifyUrl: { type: String, default: "", maxlength: 300 },
     geminiApiKey: { type: String, default: "" },
   },
   { timestamps: true }
