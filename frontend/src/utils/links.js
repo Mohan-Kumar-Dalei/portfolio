@@ -1,3 +1,6 @@
+// Public address of the site, used for canonical/og:url tags.
+export const SITE_URL = "https://mohankumardalei.apex-ui.in";
+
 export const LINKS = {
   github: "https://github.com/Mohan-Kumar-Dalei",
   linkedin: "https://www.linkedin.com/in/mohan-kumar-dalei",
