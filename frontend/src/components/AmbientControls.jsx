@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Music2, Pause, Play, Volume1, Volume2, VolumeX, X } from "lucide-react";
-import { useSound } from "../context/SoundContext";
+import { MUSIC_DEFAULT, useSound } from "../context/SoundContext";
 import { spotifyEmbedSrc } from "../lib/spotify";
 
 const fmt = (s) => {
@@ -72,7 +72,7 @@ const MusicControls = () => {
   const { audioRef, musicSrc, musicOn, setMusicOn, musicVolume, setMusicVolume } = useSound();
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const lastVolume = useRef(musicVolume || 0.35);
+  const lastVolume = useRef(musicVolume || MUSIC_DEFAULT);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -101,7 +101,7 @@ const MusicControls = () => {
     if (musicVolume > 0) {
       lastVolume.current = musicVolume;
       setMusicVolume(0);
-    } else setMusicVolume(lastVolume.current || 0.35);
+    } else setMusicVolume(lastVolume.current || MUSIC_DEFAULT);
   };
   const VolIcon = musicVolume === 0 ? VolumeX : musicVolume < 0.5 ? Volume1 : Volume2;
 

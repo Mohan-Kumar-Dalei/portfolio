@@ -31,6 +31,11 @@ const save = (key, value) => {
   }
 };
 
+// Default background-music volume (10%). The storage key changed with this
+// default so earlier visits start from it too.
+export const MUSIC_DEFAULT = 0.1;
+const MUSIC_KEY = "mkd_music_vol2";
+
 // Peak gain of an interface sound at 100% volume.
 const SFX_PEAK = 0.22;
 
@@ -42,7 +47,7 @@ export const SoundProvider = ({ children }) => {
 
   const [sfxOn, setSfxOn] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
-  const [musicVolume, setMusicVolume] = useState(() => readNum("mkd_music_vol", 0.35));
+  const [musicVolume, setMusicVolume] = useState(() => readNum(MUSIC_KEY, MUSIC_DEFAULT));
   const [sfxVolume, setSfxVolume] = useState(() => readNum("mkd_sfx_vol", 0.7));
   const [panelOpen, setPanelOpen] = useState(false);
 
@@ -72,7 +77,7 @@ export const SoundProvider = ({ children }) => {
     const a = audioRef.current;
     if (!a) return;
     a.volume = musicVolume;
-    save("mkd_music_vol", musicVolume);
+    save(MUSIC_KEY, musicVolume);
   }, [musicVolume]);
 
   useEffect(() => save("mkd_sfx_vol", sfxVolume), [sfxVolume]);
