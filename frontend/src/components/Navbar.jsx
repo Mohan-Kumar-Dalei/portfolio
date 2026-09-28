@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import LiquidGlass from "./LiquidGlass";
@@ -48,14 +48,38 @@ const Navbar = () => {
   const resume = fileUrl(settings?.resumeUrl) || LINKS.resume;
   const activeLabel = navItems.find((item) => isActivePath(location.pathname, item.to))?.label || "";
 
+  // The highlight pill sits under the hovered link, else the active one. It is
+  // positioned from the link's offset inside the nav and moved with a CSS
+  // transition, so page scroll and route changes can never throw it off
+  // (framer's shared-layout version flew in from below after a scroll + route change).
+  const linkRefs = useRef({});
+  const target = hovered || activeLabel;
+  const targetRef = useRef(target);
+  targetRef.current = target;
+  const [pill, setPill] = useState(null); // { x, w } or null
+  const [pillReady, setPillReady] = useState(false);
+  const measurePill = useCallback(() => {
+    const el = linkRefs.current[targetRef.current];
+    setPill(el ? { x: el.offsetLeft, w: el.offsetWidth } : null);
+  }, []);
+  useLayoutEffect(measurePill, [target, measurePill]);
+  useEffect(() => {
+    // Re-measure when fonts load or the bar resizes.
+    const nav = linkRefs.current.__nav;
+    if (!nav || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measurePill);
+    ro.observe(nav);
+    document.fonts?.ready.then(measurePill);
+    return () => ro.disconnect();
+  }, [measurePill]);
+  useEffect(() => {
+    // Place it first, then enable the glide, so it doesn't slide in from 0 on load.
+    if (pill && !pillReady) requestAnimationFrame(() => setPillReady(true));
+  }, [pill, pillReady]);
+
   return (
     <>
-      {/* layoutRoot: the bar is position: fixed, so the gliding pill must be
-          measured against the viewport. Without it framer adds the page scroll
-          to the pill's position, and when a route change jumps the scroll back
-          to the top the pill flew up from below. */}
-      <motion.header
-        layoutRoot
+      <header
         className="nav-enter liquid-nav fixed top-0 left-0 right-0 z-[80] h-[5rem] md:h-[5.5rem] pointer-events-none"
         data-testid="navbar"
       >
@@ -73,13 +97,25 @@ const Navbar = () => {
               <span className="text-primary">.</span>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+            <nav
+              ref={(el) => (linkRefs.current.__nav = el)}
+              className="relative hidden lg:flex items-center gap-1"
+              onMouseLeave={() => setHovered(null)}
+            >
+              <span
+                aria-hidden
+                className={`nav-pill pointer-events-none absolute inset-y-0 left-0 rounded-full ${
+                  pillReady ? "transition-[transform,width,opacity] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]" : ""
+                }`}
+                style={{ width: pill?.w || 0, transform: `translateX(${pill?.x || 0}px)`, opacity: pill ? 1 : 0 }}
+                data-testid="nav-pill"
+              />
               {navItems.map((item) => {
                 const active = isActivePath(location.pathname, item.to);
-                const showPill = hovered ? hovered === item.label : active;
                 return (
                   <NavLink
                     key={item.label}
+                    ref={(el) => (linkRefs.current[item.label] = el)}
                     to={item.to}
                     end={item.to === "/"}
                     onMouseEnter={() => setHovered(item.label)}
@@ -88,17 +124,6 @@ const Navbar = () => {
                       active || hovered === item.label ? "text-ink" : "text-ink-muted"
                     }`}
                   >
-                    {showPill && (
-                      <motion.span
-                        layoutId="nav-pill"
-                        // Only glide when the hovered/active tab changes. Opening a project
-                        // keeps "Projects" active, but the route change and scroll reset
-                        // otherwise made framer re-measure the pill and fly it in from below.
-                        layoutDependency={`${hovered || ""}|${activeLabel}`}
-                        className="nav-pill absolute inset-0 rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      />
-                    )}
                     <span className="relative z-10 flex items-center gap-1.5">
                       {active && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
                       {item.label}
@@ -133,7 +158,7 @@ const Navbar = () => {
             </div>
         </LiquidGlass>
         </div>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
         {open && (
