@@ -51,6 +51,7 @@ const blogPage = async (req, res) => {
   return sendPage(req, res, {
     title: `${blog.title} | ${seo.name}`,
     description: blog.excerpt || blog.content,
+    keywords: [...(blog.tags || []), blog.category].filter(Boolean),
     path: `/blog/${blog.slug}`,
     image: blog.coverImage,
     type: "article",
@@ -68,6 +69,7 @@ const projectPage = async (req, res) => {
   return sendPage(req, res, {
     title: `${project.title}${project.subtitle ? ` — ${project.subtitle}` : ""} | ${seo.name}`,
     description: project.description,
+    keywords: [project.title, `${project.title} project`, ...(project.techStack || []).slice(0, 8)],
     path: p,
     image: project.image,
     type: "website",
@@ -100,4 +102,12 @@ const sitemap = async (req, res) => {
   );
 };
 
-module.exports = { blogPage, projectPage, sitemap };
+// robots.txt from the same site URL as everything else, so a domain change is
+// a one-line edit in shared/seo-pages.json.
+const robots = (req, res) => {
+  res.set("Content-Type", "text/plain; charset=utf-8");
+  res.set("Cache-Control", "public, max-age=0, s-maxage=86400");
+  res.send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\n\nSitemap: ${seo.site}/sitemap.xml\n`);
+};
+
+module.exports = { blogPage, projectPage, sitemap, robots };

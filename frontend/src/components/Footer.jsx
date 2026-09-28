@@ -79,7 +79,7 @@ const Footer = () => {
 
         <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5 label text-ink-muted">
           <span>© {new Date().getFullYear()} Mohan Kumar Dalei</span>
-          <span className="hidden md:inline">Bhubaneswar, Odisha</span>
+          <span className="hidden md:inline">MERN Stack Developer · Bhubaneswar, Odisha, India</span>
           <button onClick={toTop} className="group text-ink" data-testid="footer-to-top">
             <Roll>Back to top ↑</Roll>
           </button>

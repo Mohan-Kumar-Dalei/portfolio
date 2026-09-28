@@ -133,7 +133,7 @@ const Hero = () => {
           }}
         />
         <div className="hero-photo-wrap absolute inset-0 flex items-end justify-center origin-bottom">
-          <img src={PROFILE_PNG} alt="Mohan Kumar Dalei" className="hero-photo h-[96%] w-auto max-w-none object-contain object-bottom origin-bottom" />
+          <img src={PROFILE_PNG} alt="Mohan Kumar Dalei, MERN stack developer in Bhubaneswar, India" className="hero-photo h-[96%] w-auto max-w-none object-contain object-bottom origin-bottom" />
         </div>
         <div className="hero-shade absolute inset-0 bg-black opacity-0" />
       </div>

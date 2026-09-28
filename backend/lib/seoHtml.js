@@ -31,14 +31,23 @@ const person = () => ({
   "@type": "Person",
   "@id": `${seo.site}/#person`,
   name: seo.name,
+  alternateName: seo.alternateName,
+  description: seo.description,
   url: seo.site,
   image: seo.image,
   jobTitle: seo.jobTitle,
   worksFor: { "@type": "Organization", name: "Contify" },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "Shibani Institute of Technical Education" },
   address: { "@type": "PostalAddress", addressLocality: "Bhubaneswar", addressRegion: "Odisha", addressCountry: "IN" },
-  knowsAbout: ["MERN stack", "React", "Node.js", "Express", "MongoDB", "Agentic AI", "REST APIs", "Tailwind CSS", "GSAP"],
+  knowsAbout: [
+    "MERN stack development", "React", "Node.js", "Express.js", "MongoDB", "JavaScript", "REST APIs",
+    "Agentic AI", "LLM integration", "Tailwind CSS", "GSAP", "Full-stack web development",
+  ],
   sameAs: seo.sameAs,
 });
+
+// Site-wide keywords plus the page's own, de-duplicated.
+const keywordsFor = (extra = []) => [...new Set([...extra, ...seo.keywords].map((k) => String(k).trim()).filter(Boolean))].join(", ");
 
 const website = () => ({
   "@type": "WebSite",
@@ -130,13 +139,16 @@ const injectSeo = (html, meta) => {
   // Drop the defaults we are about to replace, keep everything else as built.
   let out = html
     .replace(/<title>[\s\S]*?<\/title>\s*/i, "")
-    .replace(/<meta\s+(?:name|property)="(?:description|robots|og:[^"]+|twitter:[^"]+|article:[^"]+)"[^>]*>\s*/gi, "")
+    .replace(/<meta\s+(?:name|property)="(?:description|keywords|author|robots|og:[^"]+|twitter:[^"]+|article:[^"]+)"[^>]*>\s*/gi, "")
     .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, "")
     .replace(/<script\s+type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>\s*/gi, "");
 
   const tags = [
     `<title>${title}</title>`,
     `<meta name="description" content="${description}" />`,
+    // Google ignores this tag, but Bing/Yandex and some site search tools still read it.
+    `<meta name="keywords" content="${esc(keywordsFor(meta.keywords))}" />`,
+    `<meta name="author" content="${esc(seo.name)}" />`,
     `<meta name="robots" content="${meta.noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}" />`,
     `<link rel="canonical" href="${esc(url)}" />`,
     `<meta property="og:type" content="${meta.type || "website"}" />`,

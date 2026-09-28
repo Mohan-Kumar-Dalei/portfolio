@@ -25,7 +25,7 @@ const About = () => {
           <div className="col-span-12 md:col-span-5 lg:col-span-4">
             <RevealImage
               src={img}
-              alt="Mohan Kumar Dalei"
+              alt="Mohan Kumar Dalei, MERN stack developer in Bhubaneswar, India"
               onError={() => img !== FALLBACK_IMG && setImg(FALLBACK_IMG)}
               className={`aspect-[4/5] rounded-[1.5rem] ${img === FALLBACK_IMG ? "bg-grad" : "bg-surface"}`}
               imgClassName={img === FALLBACK_IMG ? "object-contain object-bottom" : ""}

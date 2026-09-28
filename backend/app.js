@@ -95,6 +95,7 @@ const withDb = (handler) => async (req, res, next) => {
   }
 };
 app.get("/sitemap.xml", withDb(seoRoutes.sitemap));
+app.get("/robots.txt", seoRoutes.robots);
 app.get("/blog/:slug", withDb(seoRoutes.blogPage));
 app.get("/projects/:id", withDb(seoRoutes.projectPage));
 

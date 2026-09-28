@@ -23,7 +23,7 @@ const ProjectImage = ({ src, title, className = "", imgClassName = "" }) => {
     );
   }
 
-  return <img src={src} alt={title} loading="lazy" onError={() => setFailed(true)} className={`${className} ${imgClassName}`} />;
+  return <img src={src} alt={title ? `${title}, a project by Mohan Kumar Dalei` : ""} loading="lazy" onError={() => setFailed(true)} className={`${className} ${imgClassName}`} />;
 };
 
 export default ProjectImage;

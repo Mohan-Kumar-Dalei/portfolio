@@ -1,53 +1,115 @@
 {
   "site": "https://mohankumardalei.apex-ui.in",
   "name": "Mohan Kumar Dalei",
+  "alternateName": [
+    "Mohan Dalei",
+    "Mohan K. Dalei",
+    "Mohan Kumar"
+  ],
   "jobTitle": "MERN Stack Developer & Technical Analyst",
+  "description": "Mohan Kumar Dalei is a MERN stack developer and technical analyst from Bhubaneswar, Odisha, India, building full-stack web apps with React, Node.js, Express and MongoDB, and agentic AI tools.",
   "image": "https://ik.imagekit.io/h7wep5nji/portfolio-image/Profile?updatedAt=1789225097913",
   "locale": "en_IN",
   "sameAs": [
     "https://github.com/Mohan-Kumar-Dalei",
     "https://www.linkedin.com/in/mohan-kumar-dalei"
   ],
+  "keywords": [
+    "Mohan Kumar Dalei",
+    "Mohan Dalei",
+    "Mohan Kumar Dalei portfolio",
+    "MERN stack developer",
+    "MERN stack developer Bhubaneswar",
+    "MERN developer Odisha",
+    "full stack developer Bhubaneswar",
+    "React developer Odisha",
+    "Node.js developer India",
+    "freelance MERN developer India",
+    "agentic AI developer",
+    "technical analyst Bhubaneswar"
+  ],
   "pages": {
     "/": {
-      "title": "Mohan Kumar Dalei | MERN Stack Developer & Technical Analyst",
-      "description": "Portfolio of Mohan Kumar Dalei, a MERN stack developer and technical analyst in Bhubaneswar, India, building fast full-stack web apps and agentic AI tools with React, Node.js, Express and MongoDB.",
+      "title": "Mohan Kumar Dalei | MERN Stack Developer, Bhubaneswar",
+      "description": "Mohan Kumar Dalei, MERN stack developer in Bhubaneswar, Odisha. Full-stack web apps and agentic AI tools with React, Node.js, Express and MongoDB.",
+      "keywords": [
+        "MERN stack developer portfolio",
+        "full stack developer India",
+        "React Node.js developer"
+      ],
       "changefreq": "weekly",
       "priority": "1.0"
     },
     "/about": {
-      "title": "About Mohan Kumar Dalei | MERN Stack Developer",
-      "description": "The story, skills and approach of Mohan Kumar Dalei: a MERN stack developer and technical analyst who builds full-stack products and agentic AI tools.",
+      "title": "About Mohan Kumar Dalei | MERN & React Developer, Odisha",
+      "description": "Mohan Kumar Dalei: B.Tech CSE graduate, MERN stack developer from Odisha and Technical Analyst at Contify, building full-stack and AI products.",
+      "keywords": [
+        "about Mohan Kumar Dalei",
+        "MERN developer Odisha",
+        "React developer Bhubaneswar"
+      ],
       "changefreq": "monthly",
       "priority": "0.8"
     },
     "/projects": {
-      "title": "Projects | Mohan Kumar Dalei",
-      "description": "Full-stack MERN and AI projects by Mohan Kumar Dalei, including CosmosGen, AI Exam Coach, SARHA, XPath Finder PRO and the Apex UI component library.",
+      "title": "Projects by Mohan Kumar Dalei | MERN & AI Web Apps",
+      "description": "Full-stack MERN and AI projects by Mohan Kumar Dalei: CosmosGen, AI Exam Coach, SARHA voice assistant, XPath Finder PRO and the Apex UI React component library.",
+      "keywords": [
+        "MERN projects",
+        "React projects",
+        "AI web apps",
+        "Apex UI",
+        "CosmosGen",
+        "AI Exam Coach"
+      ],
       "changefreq": "weekly",
       "priority": "0.9"
     },
     "/experience": {
       "title": "Experience & Education | Mohan Kumar Dalei",
-      "description": "Work experience, education, certifications and achievements of Mohan Kumar Dalei, Technical Analyst at Contify and MERN & AI developer.",
+      "description": "Mohan Kumar Dalei's experience: Technical Analyst at Contify, MERN & AI developer, Sheryians MERN with Generative AI cohort, B.Tech in CSE.",
+      "keywords": [
+        "Mohan Kumar Dalei resume",
+        "Mohan Kumar Dalei Contify",
+        "MERN developer experience"
+      ],
       "changefreq": "monthly",
       "priority": "0.7"
     },
     "/services": {
-      "title": "Services | Mohan Kumar Dalei",
-      "description": "MERN stack development, agentic AI integration, REST API development and database design for startups and businesses.",
+      "title": "MERN & AI Development Services | Mohan Kumar Dalei",
+      "description": "Hire Mohan Kumar Dalei for MERN stack development, agentic AI integration, REST APIs and MongoDB design. Freelance and remote, from Bhubaneswar.",
+      "keywords": [
+        "hire MERN developer",
+        "freelance React developer",
+        "AI integration services",
+        "REST API development",
+        "MongoDB database design"
+      ],
       "changefreq": "monthly",
-      "priority": "0.7"
+      "priority": "0.8"
     },
     "/blog": {
-      "title": "Blog | Mohan Kumar Dalei",
-      "description": "Articles by Mohan Kumar Dalei on MERN development, AI, frontend and backend engineering, and the latest in web technology.",
+      "title": "Blog | Mohan Kumar Dalei on MERN, AI & Web Dev",
+      "description": "Articles by Mohan Kumar Dalei on MERN development, AI news, frontend and backend engineering, and the latest in web technology.",
+      "keywords": [
+        "MERN blog",
+        "AI news",
+        "web development blog",
+        "React articles",
+        "Node.js articles"
+      ],
       "changefreq": "weekly",
       "priority": "0.8"
     },
     "/contact": {
-      "title": "Contact | Mohan Kumar Dalei",
-      "description": "Get in touch with Mohan Kumar Dalei for freelance projects, full-time roles and collaborations in MERN development and AI.",
+      "title": "Contact Mohan Kumar Dalei | Hire a MERN Developer",
+      "description": "Contact Mohan Kumar Dalei for freelance projects, roles and collaborations in MERN development and AI. Based in Bhubaneswar, open to remote work.",
+      "keywords": [
+        "contact Mohan Kumar Dalei",
+        "hire MERN developer India",
+        "freelance web developer Bhubaneswar"
+      ],
       "changefreq": "yearly",
       "priority": "0.6"
     }
