@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import PageTransition from "../components/PageTransition";
 import PageHeader from "../components/PageHeader";
 import Contact from "../components/sections/Contact";
@@ -14,8 +15,7 @@ const ContactPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Contact | Mohan Kumar Dalei</title>
-        <meta name="description" content="Get in touch with Mohan Kumar Dalei for projects, roles and collaborations." />
+        <title>{pageTitle("/contact")}</title>
       </Helmet>
 
       <PageHeader

@@ -1,13 +1,11 @@
 import { cloneElement, useEffect, useRef, useState } from "react";
 import { useLocation, useOutlet } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SmoothScroll, useLenis } from "../hooks/useLenis";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import ScrollProgress from "./ScrollProgress";
 import Preloader from "./Preloader";
-import { SITE_URL } from "../utils/links";
 
 const ScrollManager = () => {
   const location = useLocation();
@@ -56,18 +54,6 @@ const OutlineFilter = () => (
   </svg>
 );
 
-// One canonical URL per route, so search engines index each page on its own.
-const CanonicalTags = () => {
-  const { pathname } = useLocation();
-  const url = SITE_URL + (pathname === "/" ? "/" : pathname.replace(/\/$/, ""));
-  return (
-    <Helmet>
-      <link rel="canonical" href={url} />
-      <meta property="og:url" content={url} />
-    </Helmet>
-  );
-};
-
 // A new key per path remounts the page, which replays its CSS entrance.
 // The next page mounts straight away (no waiting on an exit animation).
 const AnimatedOutlet = () => {
@@ -92,7 +78,6 @@ const Layout = () => {
       <OutlineFilter />
       {loading && firstRef.current && <Preloader onComplete={handleReady} />}
       <ScrollProgress />
-      <CanonicalTags />
       <ScrollManager />
       <Navbar />
       <main className="relative z-10" style={{ backgroundColor: "var(--bg)" }}>

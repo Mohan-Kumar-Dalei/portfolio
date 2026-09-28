@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PageTransition from "../components/PageTransition";
 import { useSite } from "../context/SiteContext";
@@ -32,8 +33,7 @@ const Home = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Mohan Kumar Dalei | MERN Stack Developer & Technical Analyst</title>
-        <meta name="description" content="Premium MERN stack developer specialising in Agentic AI. Explore selected work, skills, writing and experience." />
+        <title>{pageTitle("/")}</title>
       </Helmet>
 
       <Hero />

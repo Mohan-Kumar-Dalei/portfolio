@@ -62,13 +62,15 @@ const Navbar = () => {
     const el = linkRefs.current[targetRef.current];
     setPill(el ? { x: el.offsetLeft, w: el.offsetWidth } : null);
   }, []);
-  useLayoutEffect(measurePill, [target, measurePill]);
+  // Re-measure when the target changes and also when the active page changes:
+  // the active dot moves between links and shifts their widths even if the
+  // hovered link (the target) stays the same.
+  useLayoutEffect(measurePill, [target, activeLabel, measurePill]);
   useEffect(() => {
-    // Re-measure when fonts load or the bar resizes.
-    const nav = linkRefs.current.__nav;
-    if (!nav || typeof ResizeObserver === "undefined") return;
+    // ...and whenever any link or the bar resizes (fonts loading, viewport).
+    if (typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(measurePill);
-    ro.observe(nav);
+    Object.values(linkRefs.current).forEach((el) => el && ro.observe(el));
     document.fonts?.ready.then(measurePill);
     return () => ro.disconnect();
   }, [measurePill]);
@@ -99,6 +101,7 @@ const Navbar = () => {
 
             <nav
               ref={(el) => (linkRefs.current.__nav = el)}
+              aria-label="Primary"
               className="relative hidden lg:flex items-center gap-1"
               onMouseLeave={() => setHovered(null)}
             >

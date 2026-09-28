@@ -139,7 +139,9 @@ const Hero = () => {
       </div>
 
       {/* Name — MOHAN | window | KUMAR on desktop, stacked around it on phones */}
-      <h1 className="hero-name pointer-events-none absolute inset-0 z-20 title-xl whitespace-nowrap text-[13vw] md:text-[5vw]" style={{ visibility: "hidden" }} aria-label="Mohan Kumar Dalei">
+      <h1 className="hero-name pointer-events-none absolute inset-0 z-20 title-xl whitespace-nowrap text-[13vw] md:text-[5vw]" style={{ visibility: "hidden" }} aria-label="Mohan Kumar Dalei, MERN Stack Developer and Technical Analyst">
+        {/* Full heading text for search engines; the visible design stays "MOHAN | KUMAR". */}
+        <span className="sr-only">Mohan Kumar Dalei, MERN Stack Developer and Technical Analyst</span>
         <span className="absolute inset-x-0 bottom-[calc(50%+28svh)] text-center md:inset-x-auto md:bottom-auto md:right-[calc(50%+14.5vw)] md:top-1/2 md:-translate-y-1/2 md:text-right">
           <span className="hero-l1 hero-split inline-block">Mohan</span>
         </span>

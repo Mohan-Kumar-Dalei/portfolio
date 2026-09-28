@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -54,8 +55,7 @@ const ExperiencePage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Experience | Mohan Kumar Dalei</title>
-        <meta name="description" content="Work experience, internships, achievements and certifications of Mohan Kumar Dalei." />
+        <title>{pageTitle("/experience")}</title>
       </Helmet>
 
       <PageHeader

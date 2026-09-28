@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { SITE_NAME } from "../seo";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -88,9 +89,7 @@ const ProjectDetailPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>{`${p.title} | Mohan Kumar Dalei`}</title>
-        <meta name="description" content={p.description} />
-        <meta property="og:image" content={p.image} />
+        <title>{`${p.title} | ${SITE_NAME}`}</title>
       </Helmet>
 
       {/* Cover */}

@@ -1,0 +1,55 @@
+{
+  "site": "https://mohankumardalei.apex-ui.in",
+  "name": "Mohan Kumar Dalei",
+  "jobTitle": "MERN Stack Developer & Technical Analyst",
+  "image": "https://ik.imagekit.io/h7wep5nji/portfolio-image/Profile?updatedAt=1789225097913",
+  "locale": "en_IN",
+  "sameAs": [
+    "https://github.com/Mohan-Kumar-Dalei",
+    "https://www.linkedin.com/in/mohan-kumar-dalei"
+  ],
+  "pages": {
+    "/": {
+      "title": "Mohan Kumar Dalei | MERN Stack Developer & Technical Analyst",
+      "description": "Portfolio of Mohan Kumar Dalei, a MERN stack developer and technical analyst in Bhubaneswar, India, building fast full-stack web apps and agentic AI tools with React, Node.js, Express and MongoDB.",
+      "changefreq": "weekly",
+      "priority": "1.0"
+    },
+    "/about": {
+      "title": "About Mohan Kumar Dalei | MERN Stack Developer",
+      "description": "The story, skills and approach of Mohan Kumar Dalei: a MERN stack developer and technical analyst who builds full-stack products and agentic AI tools.",
+      "changefreq": "monthly",
+      "priority": "0.8"
+    },
+    "/projects": {
+      "title": "Projects | Mohan Kumar Dalei",
+      "description": "Full-stack MERN and AI projects by Mohan Kumar Dalei, including CosmosGen, AI Exam Coach, SARHA, XPath Finder PRO and the Apex UI component library.",
+      "changefreq": "weekly",
+      "priority": "0.9"
+    },
+    "/experience": {
+      "title": "Experience & Education | Mohan Kumar Dalei",
+      "description": "Work experience, education, certifications and achievements of Mohan Kumar Dalei, Technical Analyst at Contify and MERN & AI developer.",
+      "changefreq": "monthly",
+      "priority": "0.7"
+    },
+    "/services": {
+      "title": "Services | Mohan Kumar Dalei",
+      "description": "MERN stack development, agentic AI integration, REST API development and database design for startups and businesses.",
+      "changefreq": "monthly",
+      "priority": "0.7"
+    },
+    "/blog": {
+      "title": "Blog | Mohan Kumar Dalei",
+      "description": "Articles by Mohan Kumar Dalei on MERN development, AI, frontend and backend engineering, and the latest in web technology.",
+      "changefreq": "weekly",
+      "priority": "0.8"
+    },
+    "/contact": {
+      "title": "Contact | Mohan Kumar Dalei",
+      "description": "Get in touch with Mohan Kumar Dalei for freelance projects, full-time roles and collaborations in MERN development and AI.",
+      "changefreq": "yearly",
+      "priority": "0.6"
+    }
+  }
+}

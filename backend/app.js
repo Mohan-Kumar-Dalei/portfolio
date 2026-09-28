@@ -18,6 +18,7 @@ const chatlogRoutes = require("./routes/chatlogRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const fileRoutes = require("./routes/fileRoutes");
+const seoRoutes = require("./controllers/seoController");
 
 /*
  * The Express app, shared by both ways of running it:
@@ -81,6 +82,21 @@ app.use("/api/files", fileRoutes);
 
 // 404 for unmatched API routes
 app.use("/api", (req, res) => res.status(404).json({ message: "Not found" }));
+
+// Crawler-ready HTML for pages whose content is in the database, plus a live
+// sitemap (see controllers/seoController.js). On Vercel these paths are
+// rewritten to this function; locally they're served when running the build.
+const withDb = (handler) => async (req, res, next) => {
+  try {
+    await ensureReady();
+    await handler(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+};
+app.get("/sitemap.xml", withDb(seoRoutes.sitemap));
+app.get("/blog/:slug", withDb(seoRoutes.blogPage));
+app.get("/projects/:id", withDb(seoRoutes.projectPage));
 
 // On a plain Node host in production, serve the built Vite client from the
 // same origin. (On Vercel the CDN serves it; see vercel.json.)

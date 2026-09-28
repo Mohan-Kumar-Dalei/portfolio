@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight, Github, ExternalLink } from "lucide-react";
 import PageTransition from "../components/PageTransition";
@@ -47,8 +48,7 @@ const ProjectsPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Projects | Mohan Kumar Dalei</title>
-        <meta name="description" content="A showcase of full-stack MERN and Agentic AI projects by Mohan Kumar Dalei." />
+        <title>{pageTitle("/projects")}</title>
       </Helmet>
 
       <PageHeader

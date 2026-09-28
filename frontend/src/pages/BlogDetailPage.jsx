@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { SITE_NAME } from "../seo";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -76,11 +77,7 @@ const BlogDetailPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>{`${blog.title} | Mohan Kumar Dalei`}</title>
-        <meta name="description" content={blog.excerpt} />
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:image" content={blog.coverImage} />
+        <title>{`${blog.title} | ${SITE_NAME}`}</title>
       </Helmet>
 
       <header className="relative pt-28 md:pt-36 pb-12 overflow-hidden">

@@ -7,10 +7,26 @@
   "functions": {
     "api/index.js": {
       "maxDuration": 60,
-      "includeFiles": "backend/**"
+      "includeFiles": "{backend/**,shared/**}"
     }
   },
   "rewrites": [
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.svg"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api"
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/api"
+    },
+    {
+      "source": "/projects/:id",
+      "destination": "/api"
+    },
     {
       "source": "/api/:path*",
       "destination": "/api"

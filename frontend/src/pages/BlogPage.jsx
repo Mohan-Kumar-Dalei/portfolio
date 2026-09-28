@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import PageTransition from "../components/PageTransition";
@@ -40,8 +41,7 @@ const BlogPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Blog | Mohan Kumar Dalei</title>
-        <meta name="description" content="Articles on MERN development, Agentic AI, architecture and premium UI engineering." />
+        <title>{pageTitle("/blog")}</title>
       </Helmet>
 
       <PageHeader

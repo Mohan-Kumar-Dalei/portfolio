@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { motion } from "framer-motion";
 import PageTransition from "../components/PageTransition";
 import PageHeader from "../components/PageHeader";
@@ -20,8 +21,7 @@ const AboutPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>About | Mohan Kumar Dalei</title>
-        <meta name="description" content="The story, journey, philosophy and skills of Mohan Kumar Dalei, MERN stack developer and technical analyst." />
+        <title>{pageTitle("/about")}</title>
       </Helmet>
 
       <PageHeader

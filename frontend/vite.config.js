@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       open: true,
+      // allow importing ../shared (SEO page data shared with the API)
+      fs: { allow: [".."] },
       // Lets the dev client call /api/* on the same origin — no CORS in dev.
       proxy: {
         "/api": { target: apiTarget, changeOrigin: true },

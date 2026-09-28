@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
+import { pageTitle } from "../seo";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import PageTransition from "../components/PageTransition";
@@ -49,8 +50,7 @@ const ServicesPage = () => {
   return (
     <PageTransition>
       <Helmet>
-        <title>Services | Mohan Kumar Dalei</title>
-        <meta name="description" content="MERN development, Agentic AI, API development and database design services." />
+        <title>{pageTitle("/services")}</title>
       </Helmet>
 
       <PageHeader
