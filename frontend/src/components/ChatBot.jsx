@@ -1,38 +1,48 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bot, X, Send, Loader2 } from "lucide-react";
+import { X, Send, Loader2 } from "lucide-react";
 import api from "../lib/api";
+import SarhaIcon from "./SarhaIcon";
+import ChatText from "./ChatText";
 
-const clean = (t = "") =>
-  t
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/^\s*[*-]\s+/gm, "• ")
-    .replace(/^#{1,6}\s+/gm, "");
-
-const TypingText = ({ text }) => {
-  const clet = clean(text);
+/*
+ * Types a new reply out once. When it finishes (or the panel closes mid-way)
+ * the message is marked done, so reopening the chat shows it instantly instead
+ * of replaying the animation.
+ */
+const TypingText = ({ text, onDone }) => {
   const [shown, setShown] = useState("");
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
   useEffect(() => {
-    setShown("");
     let i = 0;
+    let finished = false;
     const id = setInterval(() => {
-      i += 2;
-      setShown(clet.slice(0, i));
-      if (i >= clet.length) clearInterval(id);
-    }, 14);
-    return () => clearInterval(id);
-  }, [clet]);
-  return <span>{shown}</span>;
+      i += 3;
+      setShown(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(id);
+        finished = true;
+        doneRef.current?.();
+      }
+    }, 16);
+    return () => {
+      clearInterval(id);
+      if (!finished) doneRef.current?.();
+    };
+  }, [text]);
+  return <ChatText text={shown} />;
 };
+
+let nextId = 1;
+const newId = () => nextId++;
 
 const ChatBot = () => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi! I'm SARHA ✦ Ask me anything about Mohan's work, skills or how to hire him." },
+    { id: newId(), role: "assistant", content: "Hi! I'm SARHA ✦ Ask me anything about Mohan's work, skills or how to hire him. You can ask in any language." },
   ]);
   const sessionId = useRef(localStorage.getItem("mkd_chat_session") || Math.random().toString(36).slice(2));
   useEffect(() => {
@@ -42,20 +52,22 @@ const ChatBot = () => {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, open]);
+
+  const markDone = (id) => setMessages((list) => list.map((m) => (m.id === id && m.typing ? { ...m, typing: false } : m)));
 
   const send = async () => {
     const msg = input.trim();
     if (!msg || loading) return;
     const history = messages.map((m) => ({ role: m.role, content: m.content }));
-    setMessages((m) => [...m, { role: "user", content: msg }]);
+    setMessages((m) => [...m, { id: newId(), role: "user", content: msg }]);
     setInput("");
     setLoading(true);
     try {
       const { data } = await api.post("/chat", { message: msg, history, sessionId: sessionId.current });
-      setMessages((m) => [...m, { role: "assistant", content: data.reply, typing: true }]);
+      setMessages((m) => [...m, { id: newId(), role: "assistant", content: data.reply, typing: true }]);
     } catch (e) {
-      setMessages((m) => [...m, { role: "assistant", content: "I'm having trouble right now. Please try again." }]);
+      setMessages((m) => [...m, { id: newId(), role: "assistant", content: "I'm having trouble right now. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -69,12 +81,13 @@ const ChatBot = () => {
         transition={{ delay: 1, type: "spring" }}
         onClick={() => setOpen((v) => !v)}
         data-testid="chatbot-toggle"
-        aria-label="Open AI assistant"
+        aria-label={open ? "Close AI assistant" : "Open AI assistant"}
+        aria-expanded={open}
         className="fixed bottom-6 right-6 z-[85] grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg"
       >
         <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20" />
-        <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>
-          {open ? <X size={24} /> : <Bot size={26} />}
+        <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="relative">
+          {open ? <X size={24} /> : <SarhaIcon size={30} />}
         </motion.span>
       </motion.button>
 
@@ -90,7 +103,7 @@ const ChatBot = () => {
             data-lenis-prevent
           >
             <div className="flex items-center gap-3 p-5 border-b border-border">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-primary"><Bot size={20} /></span>
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/15 text-primary"><SarhaIcon size={24} /></span>
               <div>
                 <div className="font-display font-medium leading-none">SARHA</div>
                 <div className="text-xs text-ink-muted mt-1 flex items-center gap-1.5">
@@ -99,11 +112,14 @@ const ChatBot = () => {
               </div>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-chip border border-border text-ink"}`} data-testid={`chat-msg-${m.role}`}>
-                    {m.typing ? <TypingText text={m.content} /> : m.role === "assistant" ? clean(m.content) : m.content}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite">
+              {messages.map((m) => (
+                <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${m.role === "user" ? "bg-primary text-primary-foreground whitespace-pre-wrap" : "bg-chip border border-border text-ink"}`}
+                    data-testid={`chat-msg-${m.role}`}
+                  >
+                    {m.role === "user" ? m.content : m.typing ? <TypingText text={m.content} onDone={() => markDone(m.id)} /> : <ChatText text={m.content} />}
                   </div>
                 </div>
               ))}
@@ -127,7 +143,7 @@ const ChatBot = () => {
                 data-testid="chat-input"
                 className="flex-1 rounded-full bg-chip border border-border px-4 py-2.5 text-sm focus:border-primary outline-none transition-colors duration-200"
               />
-              <button onClick={send} disabled={loading} data-testid="chat-send" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-60">
+              <button onClick={send} disabled={loading} aria-label="Send" data-testid="chat-send" className="grid h-10 w-10 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-60">
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               </button>
             </div>

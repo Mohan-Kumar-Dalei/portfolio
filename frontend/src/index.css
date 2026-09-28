@@ -469,6 +469,49 @@ h3 .text-gradient,
   outline: none;
 }
 
+/* ── SARHA chat icon (components/SarhaIcon.jsx) ───────────── */
+.sarha-eyes {
+  animation: sarha-look 7s ease-in-out infinite;
+}
+.sarha-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sarha-blink 4.6s ease-in-out infinite;
+}
+.sarha-antenna {
+  animation: sarha-antenna 2.4s ease-in-out infinite;
+}
+@keyframes sarha-look {
+  0%, 18% { transform: translateX(0); }
+  24%, 38% { transform: translateX(-1.6px); }
+  46%, 60% { transform: translateX(1.6px); }
+  68%, 100% { transform: translateX(0); }
+}
+@keyframes sarha-blink {
+  0%, 40%, 46%, 88%, 94%, 100% { transform: scaleY(1); }
+  43%, 91% { transform: scaleY(0.12); }
+}
+@keyframes sarha-antenna {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sarha-eyes, .sarha-eye, .sarha-antenna { animation: none; }
+}
+
+/* Chat replies rendered from light Markdown (components/ChatBot.jsx). */
+.chat-md > * + * { margin-top: 0.5rem; }
+.chat-md ul, .chat-md ol { padding-left: 1.1rem; }
+.chat-md ul { list-style: disc; }
+.chat-md ol { list-style: decimal; }
+.chat-md li + li { margin-top: 0.2rem; }
+.chat-md li::marker { color: var(--accent); }
+.chat-md strong { font-weight: 600; color: var(--text); }
+.chat-md a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+.chat-md code { font-family: "JetBrains Mono", monospace; font-size: 0.85em; background: var(--chip); padding: 0.05rem 0.3rem; border-radius: 0.3rem; }
+.chat-md pre { overflow-x: auto; background: var(--chip); padding: 0.6rem 0.75rem; border-radius: 0.6rem; }
+.chat-md pre code { background: none; padding: 0; }
+
 /* ── Page entrance (components/PageTransition.jsx) ────────── */
 .page-curtain {
   transform-origin: top;
