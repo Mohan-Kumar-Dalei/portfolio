@@ -607,7 +607,14 @@ const BlogReview = ({ data }) => {
       {data.aiGenerated && (
         <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-medium"><Sparkles size={15} className="text-primary" /> AI-written draft</div>
-          <p className="mt-1 text-ink-muted">Read it through and check the facts against the sources. Tick <b>Published</b> and save when it's ready.</p>
+          {data.aiMode === "evergreen" ? (
+            <p className="mt-1 text-ink-muted">
+              There wasn't enough recent coverage of this topic, so this is an <b>evergreen guide</b> written from general knowledge.
+              Double-check facts, versions and code before you tick <b>Published</b> and save.
+            </p>
+          ) : (
+            <p className="mt-1 text-ink-muted">Read it through and check the facts against the sources. Tick <b>Published</b> and save when it's ready.</p>
+          )}
           {sources.length > 0 && (
             <ul className="mt-3 space-y-1.5">
               {sources.map((s) => (

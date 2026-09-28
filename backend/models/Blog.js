@@ -15,6 +15,8 @@ const blogSchema = new mongoose.Schema(
     author: { type: String, default: "Mohan Kumar Dalei" },
     // Set on drafts written by the AI news generator (admin → Blogs).
     aiGenerated: { type: Boolean, default: false },
+    // "news" (built from fresh stories) or "evergreen" (a guide, when a topic had no recent coverage)
+    aiMode: { type: String, enum: ["", "news", "evergreen"], default: "" },
     sources: {
       type: [{ title: String, url: String, source: String, _id: false }],
       default: [],

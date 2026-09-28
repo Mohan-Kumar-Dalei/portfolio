@@ -172,11 +172,11 @@ const fetchFeed = async ({ name, url, community = false }, fallback = false) => 
 };
 
 // Hacker News stories matching the query (Algolia search API, no key needed).
-const hackerNews = async (query, days) => {
+const hackerNews = async (query, days, minPoints = 20) => {
   try {
     const since = Math.floor(Date.now() / 1000) - days * 86400;
     const words = query.replace(/\bOR\b/g, " ").replace(/\s+/g, " ").trim();
-    const url = `https://hn.algolia.com/api/v1/search?tags=story&query=${encodeURIComponent(words)}&numericFilters=created_at_i>${since},points>20&hitsPerPage=15`;
+    const url = `https://hn.algolia.com/api/v1/search?tags=story&query=${encodeURIComponent(words)}&numericFilters=created_at_i>${since},points>${minPoints}&hitsPerPage=15`;
     const res = await get(url, "application/json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const { hits = [] } = await res.json();
@@ -210,20 +210,43 @@ const mostlyLatin = (text) => {
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim().slice(0, 80);
 
 /** Resolve a preset key or free text into a topic definition. */
+const STOPWORDS = new Set(["the", "and", "for", "with", "how", "what", "why", "new", "news", "about", "into", "from", "your", "you", "are", "latest", "stack", "development", "developer", "guide"]);
+
+// "Express.JS" -> ["express.js", "express", "expressjs"]: people write a
+// library's name several ways, so match (and tag-search) all of them.
+const keywordsOf = (text) => {
+  const out = new Set();
+  for (const raw of text.toLowerCase().split(/[^a-z0-9.+#]+/)) {
+    const w = raw.replace(/^\.+|\.+$/g, "");
+    if (w.length < 3 || STOPWORDS.has(w)) continue;
+    out.add(w);
+    const base = w.replace(/\.?js$/, "");
+    if (base !== w && base.length >= 3) {
+      out.add(base);
+      out.add(`${base}js`);
+    }
+  }
+  return [...out];
+};
+
+// DEV tags are lowercase letters/digits only ("expressjs", "mern", "node").
+const devTagsOf = (text) => [...new Set(keywordsOf(text).map((w) => w.replace(/[^a-z0-9]/g, "")).filter((w) => w.length >= 2))].slice(0, 4);
+
 const resolveTopic = (input) => {
   const key = String(input || "ai").trim();
   if (TOPICS[key]) return { key, ...TOPICS[key] };
   const text = key.replace(/\s+/g, " ").slice(0, 80);
   const title = text.replace(/\b\w/g, (c) => c.toUpperCase());
-  return { key: "custom", label: text, category: title.length <= 24 ? title : "Tech", query: text, days: 14, feeds: [] };
+  return {
+    key: "custom",
+    label: text,
+    category: title.length <= 24 ? title : "Tech",
+    query: text,
+    // niche developer topics make the news less often than headline topics
+    days: 30,
+    feeds: devTagsOf(text).map((tag) => ({ name: "DEV Community", url: `https://dev.to/feed/tag/${tag}`, community: true })),
+  };
 };
-
-const STOPWORDS = new Set(["the", "and", "for", "with", "how", "what", "why", "new", "news", "about", "into", "from", "your", "you", "are", "latest"]);
-const keywordsOf = (text) =>
-  text
-    .toLowerCase()
-    .split(/[^a-z0-9.+#]+/)
-    .filter((w) => w.length >= 3 && !STOPWORDS.has(w));
 
 const within = (item, days) => item.date && item.date.getTime() >= Date.now() - days * 86400 * 1000;
 const newestFirst = (a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0);
@@ -242,10 +265,20 @@ const latestNews = async ({ topic = "ai", limit = 12, skipLinks = [] } = {}) => 
   const lists = await Promise.all([
     ...t.feeds.map((f) => fetchFeed(f)),
     fetchFeed({ name: "Google News", url: googleNews(t.query, t.days) }, true),
-    hackerNews(t.query, t.days),
+    // custom topics are niche: accept smaller Hacker News discussions too
+    hackerNews(t.query, t.days, t.key === "custom" ? 5 : 20),
   ]);
+  // Custom topics: DEV tag posts need any spelling of a keyword; search results
+  // need a word exactly as typed in the title ("express.js", not a newspaper
+  // called "… Express").
   const keys = t.key === "custom" ? keywordsOf(t.query) : [];
-  const relevant = (i) => !keys.length || keys.some((k) => `${i.title} ${i.summary}`.toLowerCase().includes(k));
+  const typed = t.key === "custom" ? t.query.toLowerCase().split(/[^a-z0-9.+#]+/).filter((w) => w.length >= 3 && !STOPWORDS.has(w)) : [];
+  const wordIn = (text, w) => new RegExp(`(^|[^a-z0-9])${w.replace(/[.+#]/g, "\\$&")}([^a-z0-9]|$)`).test(text);
+  const relevant = (i) => {
+    if (!keys.length) return true;
+    if (i.community) return keys.some((k) => `${i.title} ${i.summary}`.toLowerCase().includes(k));
+    return typed.some((w) => wordIn(i.title.toLowerCase(), w));
+  };
 
   const skip = new Set(skipLinks);
   const seen = new Set();
@@ -264,7 +297,7 @@ const latestNews = async ({ topic = "ai", limit = 12, skipLinks = [] } = {}) => 
     perSource[i.source] = (perSource[i.source] || 0) + 1;
     return perSource[i.source] <= 3;
   });
-  const community = pool.filter((i) => i.community && within(i, t.days)).slice(0, 3);
+  const community = pool.filter((i) => i.community && within(i, t.days)).slice(0, t.key === "custom" ? 6 : 3);
   let search = pool.filter((i) => i.fallback && within(i, t.days));
   if (desks.length + community.length + search.length < 5) search = pool.filter((i) => i.fallback); // thin topic: allow older
 
