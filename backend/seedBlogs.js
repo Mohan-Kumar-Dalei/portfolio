@@ -6,7 +6,7 @@ const blogs = [
       "How I architect autonomous AI agents on top of a React, Node and MongoDB foundation — from tool-calling to persistent memory.",
     coverImage:
       "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?crop=entropy&cs=srgb&fm=jpg&q=85&w=1400",
-    category: "AI",
+    category: "AI News",
     tags: ["Agentic AI", "MERN", "Architecture"],
     featured: true,
     content: `## Why agentic systems
