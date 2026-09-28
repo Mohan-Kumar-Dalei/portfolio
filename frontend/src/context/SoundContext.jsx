@@ -31,10 +31,12 @@ const save = (key, value) => {
   }
 };
 
-// Default background-music volume (10%). The storage key changed with this
-// default so earlier visits start from it too.
-export const MUSIC_DEFAULT = 0.1;
-const MUSIC_KEY = "mkd_music_vol2";
+// Default volumes: background music 3%, hover/tap sounds 12%. The storage
+// keys change with the defaults so earlier visits start from them too.
+export const MUSIC_DEFAULT = 0.03;
+const MUSIC_KEY = "mkd_music_vol3";
+export const SFX_DEFAULT = 0.12;
+const SFX_KEY = "mkd_sfx_vol2";
 
 // Peak gain of an interface sound at 100% volume.
 const SFX_PEAK = 0.22;
@@ -48,7 +50,7 @@ export const SoundProvider = ({ children }) => {
   const [sfxOn, setSfxOn] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
   const [musicVolume, setMusicVolume] = useState(() => readNum(MUSIC_KEY, MUSIC_DEFAULT));
-  const [sfxVolume, setSfxVolume] = useState(() => readNum("mkd_sfx_vol", 0.7));
+  const [sfxVolume, setSfxVolume] = useState(() => readNum(SFX_KEY, SFX_DEFAULT));
   const [panelOpen, setPanelOpen] = useState(false);
 
   const audioRef = useRef(null);
@@ -80,7 +82,7 @@ export const SoundProvider = ({ children }) => {
     save(MUSIC_KEY, musicVolume);
   }, [musicVolume]);
 
-  useEffect(() => save("mkd_sfx_vol", sfxVolume), [sfxVolume]);
+  useEffect(() => save(SFX_KEY, sfxVolume), [sfxVolume]);
 
   useEffect(() => {
     const a = audioRef.current;
