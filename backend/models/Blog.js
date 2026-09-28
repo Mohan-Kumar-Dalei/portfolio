@@ -13,6 +13,12 @@ const blogSchema = new mongoose.Schema(
     featured: { type: Boolean, default: false },
     published: { type: Boolean, default: true },
     author: { type: String, default: "Mohan Kumar Dalei" },
+    // Set on drafts written by the AI news generator (admin → Blogs).
+    aiGenerated: { type: Boolean, default: false },
+    sources: {
+      type: [{ title: String, url: String, source: String, _id: false }],
+      default: [],
+    },
   },
   { timestamps: true }
 );

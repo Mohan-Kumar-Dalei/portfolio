@@ -198,20 +198,36 @@ const ProjectDetailPage = () => {
         </div>
       </section>
 
-      {/* Next project */}
+      {/* Next project: a full-bleed image card inside the column, so the
+          picture always fills it and the title sits on a dark scrim. */}
       {next && (
-        <Link to={`/projects/${next._id}`} className="group relative block overflow-hidden border-t border-border" data-cursor="view" data-cursor-label="Next">
-          {next.image && <img src={next.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-0 scale-110 transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-40 group-hover:scale-100" />}
-          <div className="relative wrap py-20 md:py-32">
-            <div className="label text-ink-muted">Next project</div>
-            <div className="mt-4 flex items-end justify-between gap-4 md:gap-6">
-              <span className="title-xl min-w-0 text-[clamp(1.3rem,6.5cqi,8rem)]">{next.title}</span>
-              <span className="grid h-12 w-12 md:h-16 md:w-16 shrink-0 place-items-center rounded-full bg-grad text-white transition-transform duration-500 group-hover:rotate-45">
-                <ArrowUpRight size={24} />
-              </span>
+        <section className="wrap pb-20 md:pb-28">
+          <Link
+            to={`/projects/${next._id}`}
+            className="group relative flex min-h-[20rem] md:min-h-[28rem] flex-col justify-end overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem] bg-surface"
+            data-cursor="view"
+            data-cursor-label="Next"
+            data-testid="next-project"
+          >
+            <div className="absolute inset-0">
+              <ProjectImage
+                src={next.image}
+                title=""
+                className="h-full w-full object-cover scale-105 transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100"
+              />
             </div>
-          </div>
-        </Link>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15" />
+            <div className="relative p-7 md:p-12 text-white">
+              <div className="label text-white/70">Next project · {next.category}</div>
+              <div className="mt-4 flex items-end justify-between gap-4 md:gap-6">
+                <span className="title-xl min-w-0 text-[clamp(1.3rem,6cqi,7rem)]">{next.title}</span>
+                <span className="grid h-12 w-12 md:h-16 md:w-16 shrink-0 place-items-center rounded-full bg-white text-black transition-transform duration-500 group-hover:rotate-45">
+                  <ArrowUpRight size={24} />
+                </span>
+              </div>
+            </div>
+          </Link>
+        </section>
       )}
     </PageTransition>
   );

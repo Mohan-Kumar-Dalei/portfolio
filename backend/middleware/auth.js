@@ -20,4 +20,17 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// Non-blocking check for routes that are public but show more to the admin
+// (e.g. unpublished blog drafts). Resolves to true only for a valid token.
+const isAdminRequest = async (req) => {
+  const authHeader = req.headers.authorization || "";
+  if (!authHeader.startsWith("Bearer ")) return false;
+  try {
+    const payload = jwt.verify(authHeader.slice(7), process.env.JWT_SECRET);
+    return !!(await User.exists({ _id: payload.sub }));
+  } catch {
+    return false;
+  }
+};
+
+module.exports = { protect, isAdminRequest };

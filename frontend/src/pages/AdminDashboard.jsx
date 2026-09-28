@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   LayoutDashboard, MessageSquare, FolderKanban, Quote, FileText, Settings as SettingsIcon,
-  LogOut, Trash2, Plus, Pencil, X, Loader2, Mail, Save, CheckCircle2, Bot, Upload,
+  LogOut, Trash2, Plus, Pencil, X, Loader2, Mail, Save, CheckCircle2, Bot, Upload, Sparkles, ExternalLink,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../lib/api";
@@ -38,6 +38,7 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
   const [uploading, setUploading] = useState("");
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
   const [modalError, setModalError] = useState("");
 
@@ -88,6 +89,22 @@ const AdminDashboard = () => {
   const openProjectModal = (p) => openModal({ type: "project", data: p ? { ...p, features: (p.features || []).join(", "), techStack: (p.techStack || []).join(", "), createdAt: p.createdAt ? String(p.createdAt).slice(0, 10) : today() } : { ...emptyProject } });
   const openTestimonialModal = (t) => openModal({ type: "testimonial", data: t ? { ...t } : { ...emptyTestimonial } });
   const openBlogModal = (b) => openModal({ type: "blog", data: b ? { ...b, tags: (b.tags || []).join(", ") } : { ...emptyBlog } });
+
+  // One click: fetch today's AI/tech news, have the AI write it up, and open
+  // the resulting draft for review. Nothing is published until the admin says so.
+  const generateNews = async () => {
+    setGenerating(true);
+    setError("");
+    try {
+      const { data } = await api.post("/blogs/generate", {}, { timeout: 90000 });
+      await loadAll();
+      openBlogModal(data);
+    } catch (err) {
+      setError(errMsg(err, "Couldn't generate a news draft. Please try again."));
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   // Required fields per form, checked before anything is sent.
   const missingFields = ({ type, data }) => {
@@ -191,7 +208,20 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between mb-8">
             <h1 className="font-display text-3xl font-semibold">{tabs.find((t) => t.id === tab)?.label}</h1>
             {tab === "projects" && <AddBtn onClick={() => openProjectModal()} label="Add Project" testid="admin-add-project" />}
-            {tab === "blogs" && <AddBtn onClick={() => openBlogModal()} label="Add Blog" testid="admin-add-blog" />}
+            {tab === "blogs" && (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <button
+                  onClick={generateNews}
+                  disabled={generating}
+                  className="inline-flex items-center gap-2 rounded-full bg-grad px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-70 transition-transform duration-200 hover:scale-[1.02]"
+                  data-testid="admin-generate-news"
+                >
+                  {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                  {generating ? "Writing today's AI news…" : "Generate AI news"}
+                </button>
+                <AddBtn onClick={() => openBlogModal()} label="Add Blog" testid="admin-add-blog" />
+              </div>
+            )}
             {tab === "testimonials" && <AddBtn onClick={() => openTestimonialModal()} label="Add Testimonial" testid="admin-add-testimonial" />}
           </div>
 
@@ -250,7 +280,8 @@ const AdminDashboard = () => {
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-primary font-mono">{b.category}</span>
                           {b.featured && <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded-full border border-border text-ink-muted">FEATURED</span>}
-                          {!b.published && <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded-full border border-border text-ink-muted">DRAFT</span>}
+                          {!b.published && <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded-full border border-amber-500/50 text-amber-600">DRAFT</span>}
+                          {b.aiGenerated && <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded-full border border-primary/40 text-primary">AI</span>}
                         </div>
                       </div>
                       <RowActions onEdit={() => openBlogModal(b)} onDelete={() => deleteItem("blogs", b._id)} editTestid="admin-edit-blog" delTestid="admin-delete-blog" />
@@ -381,6 +412,7 @@ const AdminDashboard = () => {
               )}
               {modal.type === "blog" && (
                 <>
+                  <BlogReview data={modal.data} />
                   <Input label="Title *" value={modal.data.title} onChange={(v) => setField("title", v)} testid="bf-title" />
                   <Textarea label="Excerpt" value={modal.data.excerpt} onChange={(v) => setField("excerpt", v)} testid="bf-excerpt" />
                   <Input label="Cover Image URL" value={modal.data.coverImage} onChange={(v) => setField("coverImage", v)} testid="bf-cover" />
@@ -446,6 +478,50 @@ const SpotifyField = ({ value, onChange }) => {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           className="mt-3 block rounded-xl border-0"
         />
+      )}
+    </div>
+  );
+};
+
+// Top of the blog modal: cover preview, AI-draft notice, sources and a
+// preview link, so a generated draft can be checked before publishing.
+const BlogReview = ({ data }) => {
+  const [broken, setBroken] = useState(false);
+  useEffect(() => setBroken(false), [data.coverImage]);
+  const sources = Array.isArray(data.sources) ? data.sources : [];
+  return (
+    <div className="space-y-4">
+      {data.coverImage && (
+        <div className="overflow-hidden rounded-xl border border-border bg-chip aspect-[16/9] grid place-items-center">
+          {broken ? (
+            <span className="px-4 text-center text-xs text-ink-muted font-mono">Cover image didn't load. Paste another Cover Image URL below.</span>
+          ) : (
+            <img src={data.coverImage} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
+          )}
+        </div>
+      )}
+      {data.aiGenerated && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+          <div className="flex items-center gap-2 font-medium"><Sparkles size={15} className="text-primary" /> AI-written draft</div>
+          <p className="mt-1 text-ink-muted">Read it through and check the facts against the sources. Tick <b>Published</b> and save when it's ready.</p>
+          {sources.length > 0 && (
+            <ul className="mt-3 space-y-1.5">
+              {sources.map((s) => (
+                <li key={s.url} className="text-xs">
+                  <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-start gap-1.5 text-primary hover:underline">
+                    <ExternalLink size={12} className="mt-0.5 shrink-0" />
+                    <span>{s.title} <span className="text-ink-muted">· {s.source}</span></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+      {data._id && data.slug && (
+        <a href={`/blog/${data.slug}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline" data-testid="bf-preview">
+          <ExternalLink size={14} /> Preview on the site{data.published ? "" : " (draft, visible only to you)"}
+        </a>
       )}
     </div>
   );

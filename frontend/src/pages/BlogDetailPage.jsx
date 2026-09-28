@@ -89,6 +89,11 @@ const BlogDetailPage = () => {
           <Link to="/blog" className="group inline-flex items-center gap-2 label text-ink-muted hover:text-ink mb-10" data-testid="blog-back">
             <ArrowLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1" /> All articles
           </Link>
+          {!blog.published && (
+            <div role="status" className="mb-8 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm" data-testid="draft-banner">
+              <strong>Draft preview.</strong> Only you can see this. Publish it from the admin dashboard when it&apos;s ready.
+            </div>
+          )}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 label text-ink-muted border-b border-border pb-4">
             <span className="text-primary">{blog.category}</span>
             <span>{blog.readingTime} min read</span>

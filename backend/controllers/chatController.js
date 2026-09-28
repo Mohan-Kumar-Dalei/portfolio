@@ -2,8 +2,7 @@ const { GoogleGenAI } = require("@google/genai");
 const Setting = require("../models/Setting");
 const Project = require("../models/Project");
 const ChatLog = require("../models/ChatLog");
-
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+const { GEMINI_MODEL, resolveApiKey } = require("../lib/gemini");
 
 const BASE_PROMPT =
   "You are 'SARHA', the friendly AI assistant on Mohan Kumar Dalei's portfolio. Mohan is a MERN " +
@@ -14,18 +13,6 @@ const BASE_PROMPT =
   "sentences — NO markdown, asterisks, bullet symbols, backticks or headings. Use ONLY the facts below. " +
   "If asked who you are or which model powers you, say you are SARHA, Mohan's portfolio assistant; " +
   "never name the underlying AI provider or model.";
-
-// Prefer the key an admin saved in Settings, fall back to the environment.
-const resolveApiKey = async () => {
-  try {
-    const s = await Setting.findOne({ key: "site" });
-    const k = (s && s.geminiApiKey ? s.geminiApiKey : "").trim();
-    if (k) return k;
-  } catch (err) {
-    console.error("[chat] settings lookup failed", err);
-  }
-  return (process.env.GEMINI_API_KEY || "").trim();
-};
 
 // Feed the model live portfolio data so answers stay in sync with the CMS.
 const buildSystemPrompt = async () => {

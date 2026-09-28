@@ -46,6 +46,7 @@ const Navbar = () => {
   useEffect(() => setOpen(false), [location.pathname]);
 
   const resume = fileUrl(settings?.resumeUrl) || LINKS.resume;
+  const activeLabel = navItems.find((item) => isActivePath(location.pathname, item.to))?.label || "";
 
   return (
     <>
@@ -90,6 +91,10 @@ const Navbar = () => {
                     {showPill && (
                       <motion.span
                         layoutId="nav-pill"
+                        // Only glide when the hovered/active tab changes. Opening a project
+                        // keeps "Projects" active, but the route change and scroll reset
+                        // otherwise made framer re-measure the pill and fly it in from below.
+                        layoutDependency={`${hovered || ""}|${activeLabel}`}
                         className="nav-pill absolute inset-0 rounded-full"
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       />

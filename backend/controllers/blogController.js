@@ -1,4 +1,5 @@
 const Blog = require("../models/Blog");
+const { isAdminRequest } = require("../middleware/auth");
 
 const slugify = (str) =>
   str
@@ -27,7 +28,8 @@ const uniqueSlug = async (base, excludeId) => {
 const listBlogs = async (req, res) => {
   const { category, tag, search, featured } = req.query;
   const q = {};
-  if (req.query.all !== "true") q.published = true;
+  // Drafts are listed for the admin only.
+  if (!(req.query.all === "true" && (await isAdminRequest(req)))) q.published = true;
   if (category && category !== "All") q.category = category;
   if (tag) q.tags = tag;
   if (featured === "true") q.featured = true;
@@ -44,7 +46,8 @@ const listBlogs = async (req, res) => {
 
 const getBlog = async (req, res) => {
   const blog = await Blog.findOne({ slug: req.params.slug });
-  if (!blog) return res.status(404).json({ message: "Blog not found" });
+  // A draft opens only for the signed-in admin (the Preview link in the dashboard).
+  if (!blog || (!blog.published && !(await isAdminRequest(req)))) return res.status(404).json({ message: "Blog not found" });
   const related = await Blog.find({
     _id: { $ne: blog._id },
     published: true,
