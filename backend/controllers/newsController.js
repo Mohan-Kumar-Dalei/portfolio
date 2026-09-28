@@ -1,6 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 const Blog = require("../models/Blog");
-const { GEMINI_MODEL, resolveApiKey } = require("../lib/gemini");
+const { GEMINI_MODEL, resolveApiKey, withGeminiKey, isInvalidKey } = require("../lib/gemini");
 const { latestNews, topicList } = require("../lib/news");
 
 /*
@@ -134,16 +134,22 @@ const generateNewsDraft = async (req, res) => {
 
   let draft;
   try {
-    const ai = new GoogleGenAI({ apiKey });
-    const result = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      config: { responseMimeType: "application/json", temperature: mode === "news" ? 0.6 : 0.7, maxOutputTokens: 4096 },
-    });
+    const result = await withGeminiKey((key) =>
+      new GoogleGenAI({ apiKey: key }).models.generateContent({
+        model: GEMINI_MODEL,
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        config: { responseMimeType: "application/json", temperature: mode === "news" ? 0.6 : 0.7, maxOutputTokens: 4096 },
+      })
+    );
     draft = extractJson(result.text || "");
   } catch (err) {
     console.error("[news] generation failed", err);
-    return res.status(502).json({ message: "The AI writer is unavailable right now. Please try again shortly." });
+    const msg = isInvalidKey(err)
+      ? "Google rejected the Gemini API key. Check GEMINI_API_KEY on Vercel or the key in Settings (it should start with \"AIza\")."
+      : err?.status === 429
+        ? "The Gemini free-tier limit was reached. Please try again in a minute."
+        : "The AI writer is unavailable right now. Please try again shortly.";
+    return res.status(502).json({ message: msg });
   }
   if (!draft || !draft.title || !draft.content) {
     return res.status(502).json({ message: "The AI returned an incomplete draft. Please try again." });

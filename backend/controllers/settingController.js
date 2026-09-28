@@ -28,6 +28,14 @@ const updateSettings = async (req, res) => {
   fields.forEach((f) => {
     if (req.body[f] !== undefined) s[f] = req.body[f];
   });
+  // A Gemini (Google AI Studio) key is "AIza" + 35 characters. Anything else
+  // would silently replace the working server key and break the chatbot.
+  s.geminiApiKey = String(s.geminiApiKey || "").trim().replace(/^["']|["']$/g, "");
+  if (s.geminiApiKey && !/^AIza[0-9A-Za-z_-]{35}$/.test(s.geminiApiKey)) {
+    return res.status(400).json({
+      message: "That doesn't look like a Gemini API key. It should start with \"AIza\" and be 39 characters long (create one at aistudio.google.com/apikey).",
+    });
+  }
   s.web3formsKey = String(s.web3formsKey || "").trim();
   if (s.web3formsKey && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.web3formsKey)) {
     return res.status(400).json({ message: "Web3Forms access key should look like xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" });

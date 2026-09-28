@@ -3,7 +3,7 @@ const Setting = require("../models/Setting");
 const Project = require("../models/Project");
 const ChatLog = require("../models/ChatLog");
 const Blog = require("../models/Blog");
-const { GEMINI_MODEL, resolveApiKey } = require("../lib/gemini");
+const { GEMINI_MODEL, withGeminiKey } = require("../lib/gemini");
 
 const KNOWLEDGE = require("../lib/sarhaKnowledge");
 
@@ -96,12 +96,7 @@ const chat = async (req, res) => {
     return res.json({ reply: "Ask me anything about Mohan — his skills, projects, services or how to hire him!" });
   }
 
-  const apiKey = await resolveApiKey();
-  if (!apiKey) return res.json({ reply: "AI is not configured yet." });
-
   try {
-    const ai = new GoogleGenAI({ apiKey });
-
     const contents = (Array.isArray(history) ? history : [])
       .slice(-8)
       .map((turn) => ({
@@ -110,19 +105,22 @@ const chat = async (req, res) => {
       }));
     contents.push({ role: "user", parts: [{ text: msg }] });
 
-    const result = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents,
-      config: {
-        systemInstruction: await buildSystemPrompt(),
-        // 2.5 models "think" first and those tokens count toward this limit;
-        // with the old 400 cap longer answers came back cut off. Chat replies
-        // don't need thinking, so it's switched off there.
-        maxOutputTokens: 1024,
-        temperature: 0.7,
-        ...(/2\.5/.test(GEMINI_MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
-      },
-    });
+    const systemInstruction = await buildSystemPrompt();
+    const result = await withGeminiKey((apiKey) =>
+      new GoogleGenAI({ apiKey }).models.generateContent({
+        model: GEMINI_MODEL,
+        contents,
+        config: {
+          systemInstruction,
+          // 2.5 models "think" first and those tokens count toward this limit;
+          // with the old 400 cap longer answers came back cut off. Chat replies
+          // don't need thinking, so it's switched off there.
+          maxOutputTokens: 1024,
+          temperature: 0.7,
+          ...(/2\.5/.test(GEMINI_MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
+      })
+    );
     const reply = (result.text || "").trim() || "Sorry, I couldn't generate a reply.";
 
     try {
@@ -140,6 +138,10 @@ const chat = async (req, res) => {
     return res.json({ reply });
   } catch (err) {
     console.error("[chat error]", err);
+    if (err?.code === "NO_KEY") return res.json({ reply: "AI is not configured yet." });
+    if (err?.status === 429 || /RESOURCE_EXHAUSTED|quota/i.test(String(err?.message))) {
+      return res.json({ reply: "Lots of people are chatting with me right now. Please try again in a minute, or email Mohan directly." });
+    }
     return res.json({ reply: "The assistant is temporarily unavailable. Please try again shortly." });
   }
 };
