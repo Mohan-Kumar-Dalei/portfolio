@@ -90,17 +90,20 @@ const AdminDashboard = () => {
   const openTestimonialModal = (t) => openModal({ type: "testimonial", data: t ? { ...t } : { ...emptyTestimonial } });
   const openBlogModal = (b) => openModal({ type: "blog", data: b ? { ...b, tags: (b.tags || []).join(", ") } : { ...emptyBlog } });
 
-  // One click: fetch today's AI/tech news, have the AI write it up, and open
-  // the resulting draft for review. Nothing is published until the admin says so.
-  const generateNews = async () => {
+  // Pick a topic, then the AI gathers fresh stories on it, writes the post and
+  // opens the draft for review. Nothing is published until the admin says so.
+  const [genOpen, setGenOpen] = useState(false);
+  const generateNews = async (topic) => {
     setGenerating(true);
     setError("");
     try {
-      const { data } = await api.post("/blogs/generate", {}, { timeout: 90000 });
+      const { data } = await api.post("/blogs/generate", { topic }, { timeout: 90000 });
+      setGenOpen(false);
       await loadAll();
       openBlogModal(data);
     } catch (err) {
-      setError(errMsg(err, "Couldn't generate a news draft. Please try again."));
+      setGenOpen(false);
+      setError(errMsg(err, "Couldn't generate a draft. Please try again."));
     } finally {
       setGenerating(false);
     }
@@ -211,13 +214,13 @@ const AdminDashboard = () => {
             {tab === "blogs" && (
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
-                  onClick={generateNews}
+                  onClick={() => setGenOpen(true)}
                   disabled={generating}
                   className="inline-flex items-center gap-2 rounded-full bg-grad px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-70 transition-transform duration-200 hover:scale-[1.02]"
                   data-testid="admin-generate-news"
                 >
                   {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                  {generating ? "Writing today's AI news…" : "Generate AI news"}
+                  {generating ? "Writing your draft…" : "Generate with AI"}
                 </button>
                 <AddBtn onClick={() => openBlogModal()} label="Add Blog" testid="admin-add-blog" />
               </div>
@@ -373,6 +376,8 @@ const AdminDashboard = () => {
         </main>
       </div>
 
+      {genOpen && <TopicPicker busy={generating} onClose={() => !generating && setGenOpen(false)} onGenerate={generateNews} />}
+
       {modal && (
         <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" data-testid="admin-modal">
           <div className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-7" data-lenis-prevent>
@@ -479,6 +484,95 @@ const SpotifyField = ({ value, onChange }) => {
           className="mt-3 block rounded-xl border-0"
         />
       )}
+    </div>
+  );
+};
+
+// Shown if the topic list can't be fetched; mirrors backend/lib/news.js.
+const FALLBACK_TOPICS = [
+  { key: "ai", label: "AI & Machine Learning" },
+  { key: "frontend", label: "Frontend development" },
+  { key: "backend", label: "Backend & APIs" },
+  { key: "devops", label: "DevOps & Cloud" },
+  { key: "security", label: "Cybersecurity" },
+  { key: "mobile", label: "Mobile apps" },
+  { key: "web", label: "Web platform & browsers" },
+];
+
+// "Generate with AI": choose a preset topic or type any topic of your own.
+const TopicPicker = ({ busy, onClose, onGenerate }) => {
+  const [topics, setTopics] = useState(FALLBACK_TOPICS);
+  const [picked, setPicked] = useState("ai");
+  const [custom, setCustom] = useState("");
+
+  useEffect(() => {
+    api.get("/blogs/generate/topics").then((r) => Array.isArray(r.data) && r.data.length && setTopics(r.data)).catch(() => {});
+  }, []);
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const topic = custom.trim() || picked;
+  const label = custom.trim() || topics.find((t) => t.key === picked)?.label || picked;
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" data-testid="topic-picker" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="topic-picker-title" className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-7" data-lenis-prevent>
+        <div className="flex items-center justify-between mb-2">
+          <h2 id="topic-picker-title" className="font-display text-xl font-medium flex items-center gap-2"><Sparkles size={18} className="text-primary" /> Generate a blog draft</h2>
+          <button onClick={onClose} disabled={busy} aria-label="Close" className="text-ink-muted hover:text-ink disabled:opacity-40"><X size={20} /></button>
+        </div>
+        <p className="text-sm text-ink-muted">Pick a topic. The AI reads the latest stories on it and writes a draft for you to review.</p>
+
+        <div className="mt-6 flex flex-wrap gap-2" role="radiogroup" aria-label="Topic">
+          {topics.map((t) => {
+            const on = !custom.trim() && picked === t.key;
+            return (
+              <button
+                key={t.key}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                disabled={busy}
+                onClick={() => {
+                  setPicked(t.key);
+                  setCustom("");
+                }}
+                className={`rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${on ? "border-primary bg-primary text-primary-foreground" : "border-border text-ink hover:border-primary"}`}
+                data-testid={`topic-${t.key}`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-6">
+          <label className="block font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-ink-muted mb-1.5">Or your own topic</label>
+          <input
+            value={custom}
+            onChange={(e) => setCustom(e.target.value.slice(0, 80))}
+            onKeyDown={(e) => e.key === "Enter" && !busy && onGenerate(topic)}
+            disabled={busy}
+            placeholder="e.g. Next.js caching, PostgreSQL performance, WebAssembly"
+            className="w-full rounded-lg bg-chip border border-border px-4 py-2.5 text-sm focus:border-primary outline-none transition-colors duration-200"
+            data-testid="topic-custom"
+          />
+        </div>
+
+        <button
+          onClick={() => onGenerate(topic)}
+          disabled={busy}
+          className="mt-7 w-full inline-flex items-center justify-center gap-2 rounded-full bg-grad px-8 py-3 font-semibold text-white disabled:opacity-80"
+          data-testid="topic-generate"
+        >
+          {busy ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+          {busy ? `Reading the latest on ${label}…` : `Generate: ${label}`}
+        </button>
+        {busy && <p className="mt-3 text-center text-xs text-ink-muted">This usually takes 15–30 seconds.</p>}
+      </div>
     </div>
   );
 };

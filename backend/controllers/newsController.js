@@ -1,13 +1,14 @@
 const { GoogleGenAI } = require("@google/genai");
 const Blog = require("../models/Blog");
 const { GEMINI_MODEL, resolveApiKey } = require("../lib/gemini");
-const { latestNews } = require("../lib/news");
+const { latestNews, topicList } = require("../lib/news");
 
 /*
- * One-click AI news draft (admin → Blogs → "Generate AI news").
+ * One-click AI blog draft (admin → Blogs → "Generate with AI").
  *
- * 1. Pull fresh AI/tech headlines from public feeds, skipping stories an
- *    earlier post already used.
+ * 1. Pull fresh stories for the chosen topic (a preset such as Frontend or
+ *    Backend, or any free-text topic) from public feeds and news search,
+ *    skipping stories an earlier post already used.
  * 2. Ask Gemini for an original article built only from those items, as JSON.
  * 3. Attach an AI-generated cover image and save it as an unpublished draft,
  *    so the admin reviews and edits before anything goes live.
@@ -42,8 +43,12 @@ const coverFor = (prompt) => {
 const PROMPT = `You are the writer of the blog on Mohan Kumar Dalei's portfolio. Mohan is a MERN stack developer
 and technical analyst who works with agentic AI; readers are developers, founders and recruiters.
 
-From the numbered news items below, pick the single most significant AI or technology story (you may
-fold in closely related items) and write an ORIGINAL blog post about it.
+The post's topic is: {{TOPIC}}.
+
+From the numbered items below, pick the single most significant or useful story for developers on
+that topic (you may fold in closely related items) and write an ORIGINAL blog post about it. If the items
+are releases or technical articles rather than news, write a clear explainer of what changed and how to
+use it. Ignore items that are off-topic.
 
 Rules:
 - Use only facts present in the items. Do not invent numbers, quotes, names, dates or events.
@@ -73,14 +78,25 @@ const extractJson = (text = "") => {
   }
 };
 
+// GET /api/blogs/generate/topics — preset topics for the admin picker.
+const listTopics = (req, res) => res.json(topicList());
+
 const generateNewsDraft = async (req, res) => {
+  const topicInput = String(req.body?.topic || "ai").trim().slice(0, 80) || "ai";
   const apiKey = await resolveApiKey();
   if (!apiKey) return res.status(400).json({ message: "No Gemini API key is set (Settings, or GEMINI_API_KEY on the server)." });
 
   const used = await Blog.find({ "sources.0": { $exists: true } }, { "sources.url": 1 }).lean();
   const skipLinks = used.flatMap((b) => (b.sources || []).map((s) => s.url));
-  const items = await latestNews({ limit: 12, skipLinks });
-  if (items.length < 2) return res.status(502).json({ message: "Couldn't reach the news feeds right now. Please try again in a minute." });
+  const { topic, items } = await latestNews({ topic: topicInput, limit: 12, skipLinks });
+  if (items.length < 2) {
+    return res.status(502).json({
+      message:
+        topic.key === "custom"
+          ? `Couldn't find enough recent stories about "${topic.label}". Try a broader topic.`
+          : "Couldn't reach the news feeds right now. Please try again in a minute.",
+    });
+  }
 
   const list = items
     .map((it, i) => `[${i + 1}] ${it.title}\nSource: ${it.source}${it.date ? ` · ${it.date.toISOString().slice(0, 10)}` : ""}\nSummary: ${it.summary || "(no summary)"}`)
@@ -91,7 +107,7 @@ const generateNewsDraft = async (req, res) => {
     const ai = new GoogleGenAI({ apiKey });
     const result = await ai.models.generateContent({
       model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: `${PROMPT}\n\nNEWS ITEMS:\n\n${list}` }] }],
+      contents: [{ role: "user", parts: [{ text: `${PROMPT.replace("{{TOPIC}}", topic.label)}\n\nITEMS:\n\n${list}` }] }],
       config: { responseMimeType: "application/json", temperature: 0.6, maxOutputTokens: 4096 },
     });
     draft = extractJson(result.text || "");
@@ -117,7 +133,7 @@ const generateNewsDraft = async (req, res) => {
     excerpt: String(draft.excerpt || "").slice(0, 240),
     content,
     coverImage: coverFor(String(draft.imagePrompt || draft.title)),
-    category: "AI News",
+    category: topic.category,
     tags: (Array.isArray(draft.tags) ? draft.tags : []).map((t) => String(t).trim()).filter(Boolean).slice(0, 5),
     readingTime: readingTime(content),
     featured: false,
@@ -129,4 +145,4 @@ const generateNewsDraft = async (req, res) => {
   res.status(201).json(blog);
 };
 
-module.exports = { generateNewsDraft };
+module.exports = { generateNewsDraft, listTopics };
