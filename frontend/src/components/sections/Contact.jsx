@@ -92,6 +92,39 @@ const Notice = ({ tone, title, children, testid }) => {
   );
 };
 
+/*
+ * Email notification through Web3Forms (free plan: must be sent from the
+ * browser). Runs after the message is safely stored; its outcome, including
+ * Web3Forms' own error text, is saved on the message so the admin dashboard
+ * shows whether the email actually went out.
+ */
+const notifyByEmail = async (data, messageId) => {
+  let ok = false;
+  let error = "";
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        name: data.name,
+        email: data.email,
+        replyto: data.email,
+        subject: `Portfolio: ${data.subject || "New message"} (from ${data.name})`,
+        message: data.message,
+        from_name: "Mohan's Portfolio",
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    ok = res.ok && body.success === true;
+    if (!ok) error = body.message || `HTTP ${res.status}`;
+  } catch (err) {
+    error = err?.message || "Network error";
+  }
+  if (!ok) console.warn("[contact] email notification failed:", error);
+  if (messageId) api.patch(`/messages/${messageId}/email`, { ok, error }).catch(() => {});
+};
+
 const Contact = () => {
   const [status, setStatus] = useState("idle"); // idle | success | error
   const [serverError, setServerError] = useState("");
@@ -111,23 +144,11 @@ const Contact = () => {
     setServerError("");
     try {
       // Persist to our own Express + MongoDB backend — this is the source of truth.
-      await api.post("/messages", data);
+      const { data: saved } = await api.post("/messages", data);
       setStatus("success");
       reset(initial);
       setTimeout(() => setStatus("idle"), 5000);
-      // Best-effort email notification via Web3Forms (non-blocking).
-      fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          name: data.name,
-          email: data.email,
-          subject: data.subject || "New portfolio message",
-          message: data.message,
-          from_name: "Portfolio Contact",
-        }),
-      }).catch(() => {});
+      notifyByEmail(data, saved?.id);
     } catch (err) {
       setStatus("error");
       setServerError(err?.response?.data?.message || "Something went wrong while sending. Please try again or email me directly.");

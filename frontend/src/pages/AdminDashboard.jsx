@@ -244,6 +244,16 @@ const AdminDashboard = () => {
                     <div>
                       <div className="flex items-center gap-3 flex-wrap"><span className="font-medium">{m.name}</span><a href={`mailto:${m.email}`} className="text-sm text-primary flex items-center gap-1"><Mail size={13} /> {m.email}</a></div>
                       {m.subject && <div className="text-sm text-ink-muted mt-1 font-mono">{m.subject}</div>}
+                      {m.emailStatus === "sent" && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 px-2.5 py-0.5 text-[0.6875rem] font-mono text-emerald-600">
+                          <CheckCircle2 size={12} /> Email sent
+                        </div>
+                      )}
+                      {m.emailStatus === "failed" && (
+                        <div className="mt-2 rounded-lg border border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs" data-testid="admin-email-failed">
+                          <b>Email not sent.</b> Web3Forms said: <span className="font-mono">{m.emailError || "unknown error"}</span>
+                        </div>
+                      )}
                       <p className="mt-3 text-ink-muted">{m.message}</p>
                       <div className="mt-3 text-xs text-ink-muted font-mono">{new Date(m.createdAt).toLocaleString()}</div>
                     </div>

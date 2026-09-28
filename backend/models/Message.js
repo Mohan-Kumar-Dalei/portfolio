@@ -7,6 +7,10 @@ const messageSchema = new mongoose.Schema(
     subject: { type: String, default: "" },
     message: { type: String, required: true },
     read: { type: Boolean, default: false },
+    // Result of the Web3Forms email notification, reported by the visitor's
+    // browser right after sending (Web3Forms' free plan is browser-only).
+    emailStatus: { type: String, enum: ["pending", "sent", "failed"], default: "pending" },
+    emailError: { type: String, default: "", maxlength: 300 },
   },
   { timestamps: true }
 );
