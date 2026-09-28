@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
 import { SectionLabel, SplitReveal, EASE_OUT } from "../editorial";
 import api from "../../lib/api";
+import { useSite } from "../../context/SiteContext";
 import { LINKS, WEB3FORMS_KEY } from "../../utils/links";
 
 const schema = z.object({
@@ -98,7 +99,7 @@ const Notice = ({ tone, title, children, testid }) => {
  * Web3Forms' own error text, is saved on the message so the admin dashboard
  * shows whether the email actually went out.
  */
-const notifyByEmail = async (data, messageId) => {
+const notifyByEmail = async (data, messageId, accessKey) => {
   let ok = false;
   let error = "";
   try {
@@ -106,7 +107,7 @@ const notifyByEmail = async (data, messageId) => {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
+        access_key: accessKey || WEB3FORMS_KEY,
         name: data.name,
         email: data.email,
         replyto: data.email,
@@ -126,6 +127,8 @@ const notifyByEmail = async (data, messageId) => {
 };
 
 const Contact = () => {
+  // The key set in Admin → Settings decides which inbox gets the email.
+  const { settings } = useSite();
   const [status, setStatus] = useState("idle"); // idle | success | error
   const [serverError, setServerError] = useState("");
   const {
@@ -148,7 +151,7 @@ const Contact = () => {
       setStatus("success");
       reset(initial);
       setTimeout(() => setStatus("idle"), 5000);
-      notifyByEmail(data, saved?.id);
+      notifyByEmail(data, saved?.id, settings?.web3formsKey);
     } catch (err) {
       setStatus("error");
       setServerError(err?.response?.data?.message || "Something went wrong while sending. Please try again or email me directly.");

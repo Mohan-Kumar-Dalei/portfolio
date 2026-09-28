@@ -369,6 +369,12 @@ const AdminDashboard = () => {
                 onPick={(f) => uploadFile("music", f)}
                 testid="upload-music"
               />
+              <div>
+                <Input label="Contact form email key (Web3Forms access key)" value={settings.web3formsKey} onChange={(v) => setSetting("web3formsKey", v.trim())} testid="set-web3forms" />
+                <p className="text-xs text-ink-muted mt-1 font-mono">
+                  Contact-form messages are emailed to the address this key was created with. Make one free at web3forms.com using the inbox you want, then paste it here. Leave empty to keep the built-in key.
+                </p>
+              </div>
               {/(spotify\.com|youtube\.com|youtu\.be)/i.test(settings.musicUrl || "") && (
                 <p className="text-xs text-rose-500 font-mono -mt-2">This field needs a direct audio file (.mp3). For Spotify, use the field below.</p>
               )}

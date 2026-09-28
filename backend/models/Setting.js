@@ -13,6 +13,9 @@ const settingSchema = new mongoose.Schema(
     musicUrl: { type: String, default: "" },
     // open.spotify.com/{track|playlist|album|episode|show}/{id}; shown as an embedded player
     spotifyUrl: { type: String, default: "", maxlength: 300 },
+    // Web3Forms access key for contact-form emails. Emails go to the address the
+    // key was created with. Public by design (used in the browser).
+    web3formsKey: { type: String, default: "", maxlength: 100 },
     geminiApiKey: { type: String, default: "" },
   },
   { timestamps: true }

@@ -23,11 +23,15 @@ const updateSettings = async (req, res) => {
   const s = await getSetting();
   const fields = [
     "resumeUrl", "availability", "availabilityOpen", "location", "email",
-    "github", "linkedin", "musicUrl", "spotifyUrl", "geminiApiKey",
+    "github", "linkedin", "musicUrl", "spotifyUrl", "web3formsKey", "geminiApiKey",
   ];
   fields.forEach((f) => {
     if (req.body[f] !== undefined) s[f] = req.body[f];
   });
+  s.web3formsKey = String(s.web3formsKey || "").trim();
+  if (s.web3formsKey && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.web3formsKey)) {
+    return res.status(400).json({ message: "Web3Forms access key should look like xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" });
+  }
   if (s.spotifyUrl && !/^https:\/\/open\.spotify\.com\/(track|playlist|album|episode|show)\/[A-Za-z0-9]+$/.test(s.spotifyUrl)) {
     return res.status(400).json({ message: "Spotify link must look like https://open.spotify.com/track/<id>" });
   }
