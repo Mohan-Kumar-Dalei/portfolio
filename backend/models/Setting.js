@@ -17,6 +17,10 @@ const settingSchema = new mongoose.Schema(
     // key was created with. Public by design (used in the browser).
     web3formsKey: { type: String, default: "", maxlength: 100 },
     geminiApiKey: { type: String, default: "" },
+    // AI model for SARHA and the blog writer, chosen in the admin; optional
+    // comma-separated fallbacks tried when it is busy. Empty = GEMINI_MODEL env.
+    geminiModel: { type: String, default: "", maxlength: 100 },
+    geminiFallbackModels: { type: String, default: "", maxlength: 300 },
   },
   { timestamps: true }
 );

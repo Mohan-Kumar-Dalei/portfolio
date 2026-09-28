@@ -156,9 +156,15 @@ const AdminDashboard = () => {
         setError("That Spotify link wasn't recognised. Paste a track, playlist or album link (or its embed code).");
         return;
       }
-      // An empty key field means "keep the saved key", so it is not sent.
-      const { geminiApiKey, hasGeminiKey, ...rest } = { ...settings, spotifyUrl: spotify ? spotify.url : "" };
-      const { data } = await api.put("/settings", geminiApiKey ? { ...rest, geminiApiKey } : rest);
+      // An empty key field means "keep the saved key", so it is not sent,
+      // unless "Remove saved key" was clicked. Read-only fields stay local.
+      // eslint-disable-next-line no-unused-vars
+      const { geminiApiKey, hasGeminiKey, geminiKeyHint, serverGeminiKey, serverGeminiModel, clearGeminiKey, ...rest } = {
+        ...settings,
+        spotifyUrl: spotify ? spotify.url : "",
+      };
+      const payload = geminiApiKey ? { ...rest, geminiApiKey } : clearGeminiKey ? { ...rest, geminiApiKey: "" } : rest;
+      const { data } = await api.put("/settings", payload);
       setSettings(data);
       setSavedFlash(true);
       setTimeout(() => setSavedFlash(false), 2500);
@@ -379,10 +385,7 @@ const AdminDashboard = () => {
                 <p className="text-xs text-rose-500 font-mono -mt-2">This field needs a direct audio file (.mp3). For Spotify, use the field below.</p>
               )}
               <SpotifyField value={settings.spotifyUrl} onChange={(v) => setSetting("spotifyUrl", v)} />
-              <div>
-                <Input label="Gemini API Key (leave blank to keep the saved one)" type="password" value={settings.geminiApiKey} onChange={(v) => setSetting("geminiApiKey", v)} testid="set-gemini" />
-                <p className="text-xs text-ink-muted mt-1 font-mono">{settings.hasGeminiKey ? "A key is saved. Enter a new one to replace it." : "No key saved. Set GEMINI_API_KEY on the server, or paste one here."}</p>
-              </div>
+              <AiSettings settings={settings} setSetting={setSetting} />
               <button onClick={saveSettings} disabled={saving} className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground disabled:opacity-70 hover:bg-highlight transition-colors duration-200" data-testid="admin-save-settings">
                 {saving ? <Loader2 size={18} className="animate-spin" /> : savedFlash ? <CheckCircle2 size={18} /> : <Save size={18} />}
                 {savedFlash ? "Saved" : "Save Settings"}
@@ -499,6 +502,125 @@ const SpotifyField = ({ value, onChange }) => {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           className="mt-3 block rounded-xl border-0"
         />
+      )}
+    </div>
+  );
+};
+
+/*
+ * Settings → AI: the key and model used by SARHA and the blog writer.
+ * "Load models" asks Google which models this key can use; "Test connection"
+ * sends one tiny request and shows Google's answer (or its exact error).
+ * Both use the key typed here if any, else the saved one, else the server's.
+ */
+const AiSettings = ({ settings, setSetting }) => {
+  const [models, setModels] = useState([]);
+  const [loadingModels, setLoadingModels] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [note, setNote] = useState(null); // { ok, text }
+  const typedKey = String(settings.geminiApiKey || "").trim();
+  const keySource = typedKey ? "the key typed above" : settings.hasGeminiKey && !settings.clearGeminiKey ? "the saved key" : settings.serverGeminiKey ? "the server key (GEMINI_API_KEY)" : null;
+
+  const loadModels = async () => {
+    setLoadingModels(true);
+    setNote(null);
+    try {
+      const { data } = await api.post("/settings/gemini/models", { apiKey: typedKey });
+      setModels(data.models || []);
+      setNote({ ok: true, text: `${data.models.length} models available with ${keySource}.` });
+    } catch (err) {
+      setNote({ ok: false, text: err?.response?.data?.message || "Couldn't load models." });
+    } finally {
+      setLoadingModels(false);
+    }
+  };
+
+  const test = async () => {
+    setTesting(true);
+    setNote(null);
+    try {
+      const { data } = await api.post("/settings/gemini/test", { apiKey: typedKey, model: settings.geminiModel }, { timeout: 30000 });
+      setNote({ ok: true, text: `Working ✓ ${data.model} replied "${data.reply}" in ${(data.ms / 1000).toFixed(1)}s (using ${keySource}). Click Save Settings to keep it.` });
+    } catch (err) {
+      setNote({ ok: false, text: err?.response?.data?.message || "Test failed." });
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-border p-4 space-y-4" data-testid="ai-settings">
+      <div className="flex items-center gap-2 font-medium"><Bot size={16} className="text-primary" /> AI (SARHA chatbot & blog writer)</div>
+
+      <div>
+        <Input label="Gemini API key" type="password" value={settings.geminiApiKey} onChange={(v) => { setSetting("geminiApiKey", v.trim()); setSetting("clearGeminiKey", false); }} testid="set-gemini" />
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-mono text-ink-muted">
+          {settings.hasGeminiKey && !settings.clearGeminiKey ? (
+            <>
+              <span className="text-emerald-600">Key saved: {settings.geminiKeyHint}</span>
+              <span>· paste a new one to replace it</span>
+              <button type="button" onClick={() => setSetting("clearGeminiKey", true)} className="underline hover:text-rose-500">Remove saved key</button>
+            </>
+          ) : settings.clearGeminiKey ? (
+            <span className="text-rose-500">Saved key will be removed when you click Save Settings.</span>
+          ) : (
+            <span>No key saved here{settings.serverGeminiKey ? " · the server key (GEMINI_API_KEY) is used" : " · and no server key either"}</span>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block font-mono text-[0.6875rem] uppercase tracking-[0.15em] text-ink-muted mb-1.5">Model</label>
+        <div className="flex gap-2">
+          <input
+            list="gemini-models"
+            value={settings.geminiModel ?? ""}
+            onChange={(e) => setSetting("geminiModel", e.target.value.trim())}
+            placeholder={settings.serverGeminiModel ? `Server default: ${settings.serverGeminiModel}` : "e.g. gemini-3.1-flash-lite"}
+            className="min-w-0 flex-1 rounded-lg bg-chip border border-border px-4 py-2.5 text-sm focus:border-primary outline-none transition-colors duration-200"
+            data-testid="set-gemini-model"
+          />
+          <datalist id="gemini-models">
+            {models.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          </datalist>
+          <button type="button" onClick={loadModels} disabled={loadingModels || !keySource} className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 text-sm hover:border-primary disabled:opacity-50" data-testid="load-models">
+            {loadingModels ? <Loader2 size={14} className="animate-spin" /> : null} Load models
+          </button>
+        </div>
+        {models.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {models.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => setSetting("geminiModel", m.id)}
+                className={`rounded-full border px-2.5 py-1 text-[0.6875rem] font-mono transition-colors ${settings.geminiModel === m.id ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary"}`}
+              >
+                {m.id}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Input
+        label="Fallback models (optional, comma separated)"
+        value={settings.geminiFallbackModels}
+        onChange={(v) => setSetting("geminiFallbackModels", v)}
+        testid="set-gemini-fallbacks"
+      />
+      <p className="-mt-3 text-xs font-mono text-ink-muted">Tried in order when the main model is busy. Leave empty if you only want one model.</p>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={test} disabled={testing || !keySource} className="inline-flex items-center gap-2 rounded-full border border-primary px-5 py-2 text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50" data-testid="test-gemini">
+          {testing ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />} Test connection
+        </button>
+        {!keySource && <span className="text-xs text-rose-500">Add a key first.</span>}
+      </div>
+      {note && (
+        <div role="status" className={`rounded-lg border px-3 py-2 text-sm ${note.ok ? "border-emerald-500/40 bg-emerald-500/10" : "border-rose-500/40 bg-rose-500/10"}`} data-testid="ai-note">
+          {note.text}
+        </div>
       )}
     </div>
   );

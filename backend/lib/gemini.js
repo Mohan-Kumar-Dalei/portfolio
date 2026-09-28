@@ -1,87 +1,102 @@
 const { GoogleGenAI } = require("@google/genai");
 const Setting = require("../models/Setting");
 
-// Main model, plus fallbacks tried when it is overloaded (503), rate-limited
-// (429) or unavailable. Override the list with GEMINI_FALLBACK_MODELS
-// (comma-separated). Models that don't exist for the key are skipped.
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-const FALLBACK_MODELS = (process.env.GEMINI_FALLBACK_MODELS || "gemini-2.5-flash-lite,gemini-2.5-flash,gemini-2.0-flash")
-  .split(",")
-  .map((m) => m.trim())
-  .filter(Boolean);
-const modelChain = () => [...new Set([GEMINI_MODEL, ...FALLBACK_MODELS])];
+/*
+ * Key and model for SARHA and the AI blog writer. Both are set in the admin
+ * (Settings → AI); the environment (GEMINI_API_KEY, GEMINI_MODEL,
+ * GEMINI_FALLBACK_MODELS) is the fallback. No model names are hard-coded,
+ * because Google retires models regularly.
+ */
 
 const envKey = () => (process.env.GEMINI_API_KEY || "").trim();
+const splitModels = (s) =>
+  String(s || "")
+    .split(",")
+    .map((m) => m.trim().replace(/^models\//, ""))
+    .filter(Boolean);
 
-// Prefer the key an admin saved in Settings, fall back to the environment.
-const resolveApiKey = async () => {
+const loadSettings = async () => {
   try {
-    const s = await Setting.findOne({ key: "site" });
-    const k = (s && s.geminiApiKey ? s.geminiApiKey : "").trim();
-    if (k) return k;
+    return (await Setting.findOne({ key: "site" }).lean()) || {};
   } catch (err) {
     console.error("[gemini] settings lookup failed", err);
+    return {};
   }
-  return envKey();
 };
+
+// Main model first, then fallbacks, de-duplicated.
+const modelChain = (s) => {
+  const main = (s.geminiModel || process.env.GEMINI_MODEL || "").trim();
+  const fallbacks = splitModels(s.geminiFallbackModels || process.env.GEMINI_FALLBACK_MODELS);
+  return [...new Set([main, ...fallbacks].filter(Boolean))];
+};
+
+// For callers that only need to know whether any key exists.
+const resolveApiKey = async () => ((await loadSettings()).geminiApiKey || "").trim() || envKey();
 
 const text = (err) => String(err?.message || err);
 const isInvalidKey = (err) => /API_KEY_INVALID|API key not valid/i.test(text(err));
 const isBusy = (err) => [429, 500, 503].includes(err?.status) || /UNAVAILABLE|RESOURCE_EXHAUSTED|high demand|overloaded/i.test(text(err));
-const isMissingModel = (err) => err?.status === 404 || /NOT_FOUND|is not found|not supported/i.test(text(err));
+const isMissingModel = (err) => err?.status === 404 || /NOT_FOUND|is not found|not supported|no longer available|deprecated/i.test(text(err));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/**
- * Run `fn(apiKey)` with the preferred key. If Google rejects that key as
- * invalid and a different server key exists, retry once with the server key,
- * so a bad key pasted into the admin can't take the chatbot down.
- */
-const withGeminiKey = async (fn) => {
-  const primary = await resolveApiKey();
-  if (!primary) throw Object.assign(new Error("No Gemini API key configured"), { code: "NO_KEY" });
-  try {
-    return await fn(primary);
-  } catch (err) {
-    const fallback = envKey();
-    if (isInvalidKey(err) && fallback && fallback !== primary) {
-      console.warn("[gemini] saved key rejected as invalid; retrying with the server key");
-      return fn(fallback);
+// One model: try the admin's key, and the server key if Google calls the first
+// invalid. A rejected key is removed from `keys` so later models skip it.
+const callModel = async (keys, savedKey, model, contents, config) => {
+  let keyErr;
+  for (const apiKey of [...keys]) {
+    try {
+      return await new GoogleGenAI({ apiKey }).models.generateContent({ model, contents, config });
+    } catch (err) {
+      if (!isInvalidKey(err)) throw err;
+      console.warn(`[gemini] ${apiKey === savedKey ? "saved" : "server"} key rejected as invalid`);
+      keys.splice(keys.indexOf(apiKey), 1);
+      keyErr = err;
     }
-    throw err;
   }
+  throw keyErr;
 };
 
 /**
- * generateContent with resilience: tries the main model (one quick retry if
- * it's busy), then each fallback model. `config` may be a function of the
- * model name, for model-specific settings. Resolves to { result, model }.
+ * generateContent with resilience: the chosen model (one quick retry if it's
+ * busy), then each fallback model; retired/unknown models are skipped. An
+ * invalid key stops at once (after trying the server key). `config` may be a
+ * function of the model name. Resolves to { result, model }.
  */
 const generate = async ({ contents, config, deadlineMs = 25000 }) => {
+  const s = await loadSettings();
+  const saved = (s.geminiApiKey || "").trim();
+  const keys = [...new Set([saved, envKey()].filter(Boolean))];
+  if (!keys.length) throw Object.assign(new Error("No Gemini API key configured"), { code: "NO_KEY" });
+  const models = modelChain(s);
+  if (!models.length) throw Object.assign(new Error("No Gemini model configured (Admin → Settings → AI)"), { code: "NO_MODEL" });
+
   const started = Date.now();
   let lastErr;
-  for (const model of modelChain()) {
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
     for (let attempt = 0; attempt < 2; attempt++) {
       if (Date.now() - started > deadlineMs) throw lastErr || new Error("Gemini timed out");
       try {
         const cfg = typeof config === "function" ? config(model) : config;
-        const result = await withGeminiKey((apiKey) => new GoogleGenAI({ apiKey }).models.generateContent({ model, contents, config: cfg }));
-        if (model !== GEMINI_MODEL) console.warn(`[gemini] answered by fallback model ${model}`);
+        const result = await callModel(keys, saved, model, contents, cfg);
+        if (i > 0) console.warn(`[gemini] answered by fallback model ${model}`);
         return { result, model };
       } catch (err) {
         lastErr = err;
-        if (isInvalidKey(err) || err?.code === "NO_KEY") throw err; // another model won't help
-        if (isMissingModel(err)) break; // skip to the next model
+        if (isInvalidKey(err)) throw err; // no key works; another model won't help
+        if (isMissingModel(err)) break; // retired or unknown: next model
         if (!isBusy(err)) throw err;
-        if (attempt === 0 && model === GEMINI_MODEL) {
+        if (attempt === 0 && i === 0) {
           await sleep(700); // brief spike: one retry on the main model
           continue;
         }
-        break; // busy: move on to the next model
+        break; // still busy: next model
       }
     }
-    console.warn(`[gemini] ${model} unavailable (${lastErr?.status || "error"}), trying the next model`);
+    if (i < models.length - 1) console.warn(`[gemini] ${model} unavailable (${lastErr?.status || "error"}), trying ${models[i + 1]}`);
   }
   throw lastErr;
 };
 
-module.exports = { GEMINI_MODEL, resolveApiKey, withGeminiKey, generate, isInvalidKey, isBusy };
+module.exports = { resolveApiKey, generate, isInvalidKey, isBusy, modelChain };

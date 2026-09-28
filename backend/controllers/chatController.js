@@ -138,7 +138,7 @@ const chat = async (req, res) => {
     return res.json({ reply });
   } catch (err) {
     console.error("[chat error]", err);
-    if (err?.code === "NO_KEY") return res.json({ reply: "AI is not configured yet." });
+    if (err?.code === "NO_KEY" || err?.code === "NO_MODEL") return res.json({ reply: "AI is not configured yet." });
     if (isBusy(err)) {
       return res.json({ reply: "Lots of people are chatting with me right now. Please try again in a minute, or email Mohan directly." });
     }
