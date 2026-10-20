@@ -103,7 +103,9 @@ const Footer = () => (
         Back to top <ArrowUp aria-hidden className="size-3.5" />
       </button>
     </Cells>
-    <div className="h-16" />
+    <span aria-hidden className="v2-bigname">
+      mohan
+    </span>
   </footer>
 );
 

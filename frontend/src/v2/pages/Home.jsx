@@ -3,14 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, Copy, FileText, Github, Linkedin, Loader2, Mail } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, FileText, Github, Lightbulb, Link2, Linkedin, Loader2, Mail, MapPin } from "lucide-react";
 import { useSite } from "../../context/SiteContext";
 import { LINKS } from "../../utils/links";
 import { fileUrl } from "../../lib/api";
 import { contactSchema, sendContactMessage } from "../../lib/contact";
 import ProjectImage from "../../components/ProjectImage";
 import Avatar from "../Avatar";
-import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, STACK, STATS } from "../data";
+import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, SITE_HOST, STACK, STATS } from "../data";
 import { Cells, Hatch, Section, TechLine, TimelineRow, btn, useClock } from "../ui";
 
 export const fmtDate = (d, opts = { month: "short", day: "numeric", year: "numeric" }) => (d ? new Date(d).toLocaleDateString("en-US", opts) : "");
@@ -32,119 +32,154 @@ const RoleFlip = () => {
   );
 };
 
+const InfoRow = ({ icon: Icon, children, href }) => (
+  <div className="flex min-w-0 items-center gap-3">
+    <span className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-chip text-ink-muted">
+      <Icon aria-hidden className="size-3.5" />
+    </span>
+    {href ? (
+      <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="truncate underline-offset-[3px] transition-colors hover:text-[var(--accent)] hover:underline">
+        {children}
+      </a>
+    ) : (
+      <span className="truncate">{children}</span>
+    )}
+  </div>
+);
+
+/** Circle that flips between the photo and the avatar on click. */
+const ProfilePicture = ({ open }) => {
+  const [img, setImg] = useState(PROFILE_IMG);
+  const [flipped, setFlipped] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => setFlipped((v) => !v)}
+      aria-pressed={flipped}
+      aria-label={flipped ? "Show photo" : "Show avatar"}
+      title={flipped ? "Show photo" : "Show avatar"}
+      className={`v2-flip relative size-28 rounded-full ring-1 ring-[var(--border-strong)] ring-offset-2 ring-offset-[var(--bg)] sm:size-40 ${flipped ? "is-flipped" : ""}`}
+      data-testid="v2-profile-flip"
+    >
+      <span className="v2-flip-inner block">
+        <span className="v2-flip-face bg-chip">
+          <img
+            src={img}
+            onError={() => img !== PROFILE_FALLBACK && setImg(PROFILE_FALLBACK)}
+            alt="Mohan Kumar Dalei, MERN stack developer from Odisha, India"
+            className="h-full w-full select-none object-cover object-top"
+            draggable={false}
+          />
+        </span>
+        <span className="v2-flip-face v2-flip-back">
+          {AVATAR_IMG ? <img src={AVATAR_IMG} alt="Avatar of Mohan Kumar Dalei" className="h-full w-full object-cover" draggable={false} /> : <Avatar className="h-full w-full" />}
+        </span>
+      </span>
+      <span
+        aria-hidden
+        className={`absolute bottom-1.5 right-1.5 size-3.5 rounded-full border-[3px] border-[var(--bg)] sm:bottom-3 sm:right-3 sm:size-4 ${open ? "bg-emerald-500" : "bg-amber-500"}`}
+      />
+    </button>
+  );
+};
+
 const Hero = () => {
   const { settings } = useSite();
   const time = useClock();
-  const [img, setImg] = useState(PROFILE_IMG);
-  const [flipped, setFlipped] = useState(false);
   const open = settings?.availabilityOpen !== false;
+  const email = settings?.email || LINKS.email;
   const socials = [
     [Github, "GitHub", settings?.github || LINKS.github],
     [Linkedin, "LinkedIn", settings?.linkedin || LINKS.linkedin],
-    [Mail, "Email", `mailto:${settings?.email || LINKS.email}`],
+    [FileText, "Resume", fileUrl(settings?.resumeUrl) || LINKS.resume],
+    [Mail, "Email", `mailto:${email}`],
   ];
 
   return (
     <div className="v2-fade">
-      <div className="v2-rule-b grid md:grid-cols-[1fr_17rem]">
-        <div className="flex flex-col justify-between gap-8 p-5 sm:p-8">
-          <div>
-            <p className="v2-label">Hello, world — I&apos;m</p>
-            <h1 className="mt-3 text-[2.7rem] font-semibold leading-[0.98] tracking-[-0.045em] sm:text-[3.7rem]">
-              Mohan Kumar
-              <br />
-              Dalei<span className="text-[var(--accent)]">.</span>
-            </h1>
-            <div className="mt-4 h-5 overflow-hidden font-mono text-[13px] text-[var(--accent)]">
-              <span aria-hidden>↳ </span>
-              <RoleFlip />
-            </div>
-            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-ink-muted">
-              I build fast, thoughtful full-stack products on the MERN stack, and AI features that genuinely help.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className={btn.accent}
-            >
-              Let&apos;s talk <ArrowRight aria-hidden className="size-4" />
-            </a>
-            <a href={fileUrl(settings?.resumeUrl) || LINKS.resume} target="_blank" rel="noreferrer" className={btn.ghost}>
-              <FileText aria-hidden className="size-4" /> Resume
-            </a>
-            {socials.map(([Icon, label, href]) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("mailto:") ? undefined : "_blank"}
-                rel="noreferrer"
-                aria-label={label}
-                title={label}
-                className="grid size-10 place-items-center border border-[var(--border-strong)] text-ink-muted transition-colors hover:border-[var(--text)] hover:text-ink"
-              >
-                <Icon aria-hidden className="size-4" />
-              </a>
-            ))}
-          </div>
+      {/* Cover */}
+      <div className="v2-rule-b relative grid aspect-[2.6/1] place-items-center overflow-hidden sm:aspect-[4/1]">
+        <div aria-hidden className="v2-dots absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_80%)]" />
+        <code className="relative px-4 text-center font-mono text-[11px] leading-relaxed text-ink-muted sm:text-[13px]">
+          <span className="text-[var(--accent)]">const</span> mohan = {"{"} stack: <span className="text-ink">&quot;MERN&quot;</span>, focus:{" "}
+          <span className="text-ink">&quot;Agentic AI&quot;</span>, based: <span className="text-ink">&quot;Odisha&quot;</span> {"}"};
+        </code>
+      </div>
+
+      {/* Picture + name */}
+      <div className="v2-rule-b flex">
+        <div className="shrink-0 border-r border-border p-2 sm:p-3">
+          <ProfilePicture open={open} />
         </div>
-        <div className="v2-dots flex flex-col items-center justify-center gap-4 border-t border-border px-6 py-8 md:border-l md:border-t-0">
-          <button
-            type="button"
-            onClick={() => setFlipped((v) => !v)}
-            aria-pressed={flipped}
-            aria-label={flipped ? "Show photo" : "Show avatar"}
-            title={flipped ? "Show photo" : "Show avatar"}
-            className={`v2-flip relative size-44 rounded-full ring-1 ring-[var(--border-strong)] ring-offset-4 ring-offset-[var(--bg)] sm:size-48 ${flipped ? "is-flipped" : ""}`}
-            data-testid="v2-profile-flip"
-          >
-            <span className="v2-flip-inner block">
-              <span className="v2-flip-face bg-chip">
-                <img
-                  src={img}
-                  onError={() => img !== PROFILE_FALLBACK && setImg(PROFILE_FALLBACK)}
-                  alt="Mohan Kumar Dalei, MERN stack developer from Odisha, India"
-                  className="h-full w-full select-none object-cover object-top"
-                  draggable={false}
-                />
+        <div className="flex min-w-0 flex-1 flex-col justify-end">
+          <div className="flex flex-1 items-end justify-between gap-3 px-4 pb-2 font-mono text-xs text-ink-muted sm:px-5">
+            <span>{"// hello, world"}</span>
+            <span className="hidden sm:inline">tap the photo ↺</span>
+          </div>
+          <div className="border-t border-border px-4 py-2 sm:px-5">
+            <h1 className="text-[1.5rem] font-semibold leading-tight tracking-[-0.035em] sm:text-[2.2rem]">
+              Mohan Kumar{" "}
+              <span className="whitespace-nowrap">
+                Dalei<span className="text-[var(--accent)]">.</span>
               </span>
-              <span className="v2-flip-face v2-flip-back">
-                {AVATAR_IMG ? <img src={AVATAR_IMG} alt="Avatar of Mohan Kumar Dalei" className="h-full w-full object-cover" draggable={false} /> : <Avatar className="h-full w-full" />}
-              </span>
-            </span>
-            <span aria-hidden className={`absolute bottom-3 right-3 size-4 rounded-full border-[3px] border-[var(--bg)] ${open ? "bg-emerald-500" : "bg-amber-500"}`} />
-          </button>
-          <span className="flex items-center gap-2 font-mono text-[11px] text-ink-muted">
-            <span className={`size-1.5 rounded-full transition-colors ${flipped ? "bg-[var(--border-strong)]" : "bg-[var(--accent)]"}`} />
-            <span className={`size-1.5 rounded-full transition-colors ${flipped ? "bg-[var(--accent)]" : "bg-[var(--border-strong)]"}`} />
-            Tap to {flipped ? "see the photo" : "meet the avatar"}
-          </span>
+            </h1>
+          </div>
+          <div className="h-9 overflow-hidden border-t border-border px-4 py-2 font-mono text-[13px] text-[var(--accent)] sm:px-5">
+            <RoleFlip />
+          </div>
         </div>
       </div>
 
-      <Cells cols="grid-cols-2 lg:grid-cols-4" className="v2-rule-b">
-        {[
-          ["Based in", settings?.location || "Bhubaneswar, India"],
-          ["Local time", <span key="t" className="tabular-nums">{time} IST</span>],
-          ["Currently", "Technical Analyst @ Contify"],
-          [
-            "Status",
-            <span key="s" className="inline-flex items-center gap-2">
-              <span className={`size-1.5 shrink-0 rounded-full ${open ? "bg-emerald-500" : "bg-amber-500"}`} />
-              {settings?.availability || "Open to work"}
-            </span>,
-          ],
-        ].map(([k, v]) => (
-          <div key={k} className="px-4 py-3.5 sm:px-5">
-            <div className="v2-label">{k}</div>
-            <div className="mt-1.5 text-sm">{v}</div>
-          </div>
+      {/* Details */}
+      <div className="v2-rule-b grid gap-x-6 gap-y-3 px-4 py-5 font-mono text-[13px] sm:grid-cols-2 sm:px-5">
+        <InfoRow icon={Code2}>Technical Analyst @Contify</InfoRow>
+        <InfoRow icon={Lightbulb} href="https://apex-ui.in">
+          Creator @Apex UI
+        </InfoRow>
+        <InfoRow icon={MapPin}>{settings?.location || "Bhubaneswar, Odisha"}</InfoRow>
+        <InfoRow icon={Clock}>
+          <span className="tabular-nums">{time}</span> <span className="text-ink-muted">(IST)</span>
+        </InfoRow>
+        <InfoRow icon={Mail} href={`mailto:${email}`}>
+          {email}
+        </InfoRow>
+        <InfoRow icon={Link2} href={`https://${SITE_HOST}`}>
+          {SITE_HOST}
+        </InfoRow>
+        <div className="flex items-center gap-3 sm:col-span-2">
+          <span className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-chip">
+            <span className={`size-2 rounded-full ${open ? "bg-emerald-500" : "bg-amber-500"}`} />
+          </span>
+          <span>{settings?.availability || "Open to work"}</span>
+        </div>
+      </div>
+
+      {/* Links */}
+      <div className="v2-rule-b flex items-center gap-2 px-4 py-3 sm:px-5">
+        {socials.map(([Icon, label, href]) => (
+          <a
+            key={label}
+            href={href}
+            target={href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noreferrer"
+            aria-label={label}
+            title={label}
+            className="grid size-9 place-items-center rounded-md border border-border bg-chip text-ink-muted transition-colors hover:border-[var(--border-strong)] hover:text-ink"
+          >
+            <Icon aria-hidden className="size-4" />
+          </a>
         ))}
-      </Cells>
+        <a
+          href="#contact"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className={`${btn.accent} ml-auto h-9 rounded-md`}
+        >
+          Let&apos;s talk <ArrowRight aria-hidden className="size-4" />
+        </a>
+      </div>
     </div>
   );
 };

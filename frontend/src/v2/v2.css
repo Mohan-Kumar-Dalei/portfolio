@@ -162,6 +162,23 @@ html.is-v2 ::selection {
   background-size: 16px 16px;
 }
 
+/* The outlined name at the very bottom */
+.v2-bigname {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.75rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: clamp(5rem, 26vw, 17rem);
+  line-height: 0.78;
+  letter-spacing: -0.07em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border-strong);
+  -webkit-mask-image: linear-gradient(#000 25%, transparent 95%);
+  mask-image: linear-gradient(#000 25%, transparent 95%);
+  user-select: none;
+}
+
 /* Profile picture that flips between the photo and the avatar */
 .v2-flip {
   perspective: 900px;
