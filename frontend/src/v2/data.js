@@ -33,6 +33,8 @@ import { TbApi, TbBrandFramerMotion, TbBrandMongodb } from "react-icons/tb";
 
 export const PROFILE_IMG = "https://ik.imagekit.io/h7wep5nji/portfolio-image/Profile?updatedAt=1789225097913";
 export const PROFILE_FALLBACK = "https://ik.imagekit.io/h7wep5nji/Photos/profile-png.png";
+// Optional avatar picture for the profile flip; empty uses the drawn SVG avatar (Avatar.jsx).
+export const AVATAR_IMG = "";
 export const SITE_HOST = "mohankumardalei.apex-ui.in";
 export const REPO = "https://github.com/Mohan-Kumar-Dalei/portfolio";
 
@@ -141,7 +143,7 @@ export const EDUCATION = [
         title: "MERN with Generative AI · Job Ready Cohort",
         icon: BookOpen,
         type: "Cohort programme",
-        start: "2025",
+        start: "09.2025",
         end: "09.2025",
         bullets: [
           "Frontend and backend development, built around real projects and generative AI.",
@@ -209,14 +211,22 @@ export const ACHIEVEMENTS = [
   "Completed a 30 km mini-marathon, start to finish",
 ];
 
-// Section anchors on the v2 home page (header, command menu, version switch).
+export const STATS = [
+  ["10+", "Projects shipped"],
+  ["25+", "Public GitHub repos"],
+  ["15+", "Technologies used"],
+  ["1.2k+", "LinkedIn followers"],
+];
+
+// Section anchors on the v2 home page, in page order (sidebar index,
+// command menu, version switch).
 export const SECTIONS = [
   ["about", "About"],
-  ["stack", "Stack"],
   ["experience", "Experience"],
   ["projects", "Projects"],
+  ["testimonials", "Kind words"],
+  ["stack", "Toolbox"],
   ["education", "Education"],
-  ["certifications", "Certifications"],
-  ["blog", "Blog"],
+  ["blog", "Writing"],
   ["contact", "Contact"],
 ];
