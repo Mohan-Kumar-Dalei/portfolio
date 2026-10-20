@@ -18,6 +18,7 @@ const chatlogRoutes = require("./routes/chatlogRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const fileRoutes = require("./routes/fileRoutes");
+const visitRoutes = require("./routes/visitRoutes");
 const seoRoutes = require("./controllers/seoController");
 
 /*
@@ -76,6 +77,7 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/settings", settingRoutes);
 app.use("/api/chatlogs", chatlogRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/visits", visitRoutes);
 app.use("/api/upload", uploadRoutes);
 // Uploaded resume/music files, stored in MongoDB (see controllers/uploadController.js).
 app.use("/api/files", fileRoutes);

@@ -89,8 +89,8 @@ html.is-v2 ::selection {
   bottom: -1px;
 }
 
-/* Hatched strip between sections, edge to edge, with "+" marks where it
-   meets the frame. */
+/* Hatched strip between sections, the width of the frame, with "+" marks
+   at its corners. */
 .v2-hatch {
   position: relative;
   height: 2rem;
@@ -98,12 +98,20 @@ html.is-v2 ::selection {
 .v2-hatch::before {
   content: "";
   position: absolute;
+  inset: 0;
+  border-block: 1px solid var(--border);
+  background-image: repeating-linear-gradient(-45deg, var(--border) 0 1px, transparent 1px 7px);
+}
+/* its top and bottom lines still run edge to edge, like the other rules */
+.v2-hatch::after {
+  content: "";
+  position: absolute;
   inset-block: 0;
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
   border-block: 1px solid var(--border);
-  background-image: repeating-linear-gradient(-45deg, var(--border) 0 1px, transparent 1px 7px);
+  pointer-events: none;
 }
 .v2-cross {
   position: absolute;

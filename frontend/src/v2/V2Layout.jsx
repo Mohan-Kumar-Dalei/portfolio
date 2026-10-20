@@ -6,6 +6,7 @@ import { useSound } from "../context/SoundContext";
 import VersionSwitch from "./VersionSwitch";
 import CommandMenu from "./CommandMenu";
 import { goToSection } from "./scroll";
+import { useVisits } from "../lib/visits";
 import { Cells, Hatch } from "./ui";
 
 const FONT_ID = "v2-font";
@@ -89,6 +90,33 @@ const Header = ({ onSearch }) => {
   );
 };
 
+// Under the big name: how many people have visited the site.
+const VisitCount = () => {
+  const counts = useVisits();
+  const fmt = (n) => Number(n || 0).toLocaleString("en-IN");
+  return (
+    <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-5 pb-10 pt-4 text-center font-mono text-xs text-ink-muted" data-testid="v2-visits">
+      <span className="relative flex size-2">
+        <span className="absolute inset-0 animate-ping rounded-full bg-[var(--accent)] opacity-60" />
+        <span className="relative size-2 rounded-full bg-[var(--accent)]" />
+      </span>
+      {counts ? (
+        <>
+          <span>
+            <span className="text-[15px] font-semibold tabular-nums text-ink">{fmt(counts.visitors)}</span> people have visited
+          </span>
+          <span aria-hidden className="text-[var(--border-strong)]">·</span>
+          <span>
+            <span className="tabular-nums text-ink">{fmt(counts.visits)}</span> visits in total
+          </span>
+        </>
+      ) : (
+        <span>Counting visitors…</span>
+      )}
+    </p>
+  );
+};
+
 const Footer = () => (
   <footer>
     <Hatch />
@@ -106,6 +134,7 @@ const Footer = () => (
     <span aria-hidden className="v2-bigname">
       mohan
     </span>
+    <VisitCount />
   </footer>
 );
 
