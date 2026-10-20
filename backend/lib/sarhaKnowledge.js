@@ -51,4 +51,4 @@ NUMBERS (from the site)
 
 THIS WEBSITE
 - Built by Mohan with React, Vite, Tailwind CSS, GSAP, Lenis and Framer Motion on the front end, and Node.js, Express and MongoDB Atlas on the back end, deployed on Vercel. It has an admin dashboard, an AI blog writer and you (SARHA).
-- The site has two versions, switchable with the v1 / v2 toggle in the header: v2, the minimal boxed design, is the default at the main address; v1, the animated, cinematic original, is at /v1. Both show the same projects, blog and contact form; v2 also has a Ctrl+K search.
+- The site has two versions, switchable with the v1 / v2 toggle in the header: v2, the minimal boxed design, is the default at the main address; v1, the animated, cinematic original, is at /v1. Both show the same projects, blog and contact form; v2 also has a Ctrl+K search.`;
