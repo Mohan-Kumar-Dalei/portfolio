@@ -1,5 +1,6 @@
+import { lazy, Suspense } from "react";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { SiteProvider } from "./context/SiteContext";
@@ -20,6 +21,32 @@ import BlogDetailPage from "./pages/BlogDetailPage";
 import ContactPage from "./pages/ContactPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import { isV2Path } from "./v2/VersionSwitch";
+
+// v2, the minimal site, is its own chunk: v1 visitors never download it.
+const v2 = (name) => lazy(() => import("./v2").then((m) => ({ default: m[name] })));
+const V2Layout = v2("V2Layout");
+const V2Home = v2("Home");
+const V2Blog = v2("Blog");
+const V2BlogPost = v2("BlogPost");
+const V2Project = v2("Project");
+const page = (Page) => (
+  <Suspense fallback={null}>
+    <Page />
+  </Suspense>
+);
+
+// v1's custom cursor and film grain stay off the minimal v2 pages.
+const V1Chrome = () => {
+  const { pathname } = useLocation();
+  if (isV2Path(pathname)) return null;
+  return (
+    <>
+      <CustomCursor />
+      <div className="noise-overlay" />
+    </>
+  );
+};
 
 function App() {
   return (
@@ -29,8 +56,7 @@ function App() {
           <SiteProvider>
             <SoundProvider>
               <BrowserRouter>
-                <CustomCursor />
-                <div className="noise-overlay" />
+                <V1Chrome />
                 <SiteWidgets />
               <Routes>
                 <Route element={<Layout />}>
@@ -43,6 +69,13 @@ function App() {
                   <Route path="/blog" element={<BlogPage />} />
                   <Route path="/blog/:slug" element={<BlogDetailPage />} />
                   <Route path="/contact" element={<ContactPage />} />
+                </Route>
+                <Route path="/v2" element={page(V2Layout)}>
+                  <Route index element={page(V2Home)} />
+                  <Route path="blog" element={page(V2Blog)} />
+                  <Route path="blog/:slug" element={page(V2BlogPost)} />
+                  <Route path="projects/:id" element={page(V2Project)} />
+                  <Route path="*" element={<Navigate to="/v2" replace />} />
                 </Route>
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route

@@ -50,4 +50,5 @@ NUMBERS (from the site)
 - 10+ projects shipped, 25+ public GitHub repos, 15+ technologies, 1,200+ LinkedIn followers.
 
 THIS WEBSITE
-- Built by Mohan with React, Vite, Tailwind CSS, GSAP, Lenis and Framer Motion on the front end, and Node.js, Express and MongoDB Atlas on the back end, deployed on Vercel. It has an admin dashboard, an AI blog writer and you (SARHA).`;
+- Built by Mohan with React, Vite, Tailwind CSS, GSAP, Lenis and Framer Motion on the front end, and Node.js, Express and MongoDB Atlas on the back end, deployed on Vercel. It has an admin dashboard, an AI blog writer and you (SARHA).
+- The site has two versions, switchable with the v1 / v2 toggle in the navbar: v1 is the animated, cinematic site; v2 (at /v2) is a minimal, single-page version with the same projects, blog and contact form, plus a Ctrl+K search.`;

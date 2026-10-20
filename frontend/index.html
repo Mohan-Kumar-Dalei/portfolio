@@ -10,6 +10,12 @@
         var t = localStorage.getItem("mkd_theme_v4");
         if (t === "dark") document.documentElement.className = "dark";
       } catch (e) {}
+      // The minimal v2 site: its palette and typeface from the first paint.
+      var p = location.pathname;
+      if (p === "/v2" || p.indexOf("/v2/") === 0) {
+        document.documentElement.classList.add("is-v2");
+        document.write('<link id="v2-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" />');
+      }
     </script>
     <meta name="robots" content="index, follow" />
     <!-- Favicons for every screen: browser tabs, iOS home screen, Android / installed app -->

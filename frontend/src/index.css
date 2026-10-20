@@ -223,8 +223,9 @@ h3 .text-gradient,
 }
 
 /* ── Cursor: a single blend-mode dot that swells over links ── */
+/* (not on the minimal v2 site, which keeps the native cursor) */
 @media (pointer: fine) {
-  * {
+  html:not(.is-v2) * {
     cursor: none !important;
   }
 }

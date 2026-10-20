@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import LiquidGlass from "./LiquidGlass";
 import { ArrowUpRight } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import VersionSwitch from "../v2/VersionSwitch";
 import { useSite } from "../context/SiteContext";
 import { LINKS } from "../utils/links";
 import { fileUrl } from "../lib/api";
@@ -137,6 +138,7 @@ const Navbar = () => {
             </nav>
 
             <div className="flex items-center gap-2">
+              <VersionSwitch />
               <ThemeToggle />
               <a
                 href={resume}

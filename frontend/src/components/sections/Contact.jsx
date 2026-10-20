@@ -1,24 +1,12 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
 import { SectionLabel, SplitReveal, EASE_OUT } from "../editorial";
-import api from "../../lib/api";
+import { contactSchema, sendContactMessage } from "../../lib/contact";
 import { useSite } from "../../context/SiteContext";
-import { LINKS, WEB3FORMS_KEY } from "../../utils/links";
-
-const schema = z.object({
-  name: z.string().trim().min(2, "Please tell me your name (at least 2 characters)."),
-  email: z.string().trim().min(1, "I need your email to reply.").email("That email doesn't look right."),
-  subject: z.string().trim().max(120, "Keep the subject under 120 characters.").optional(),
-  message: z
-    .string()
-    .trim()
-    .min(10, "A little more detail, please (at least 10 characters).")
-    .max(5000, "Please keep it under 5000 characters."),
-});
+import { LINKS } from "../../utils/links";
 
 const initial = { name: "", email: "", subject: "", message: "" };
 
@@ -93,39 +81,6 @@ const Notice = ({ tone, title, children, testid }) => {
   );
 };
 
-/*
- * Email notification through Web3Forms (free plan: must be sent from the
- * browser). Runs after the message is safely stored; its outcome, including
- * Web3Forms' own error text, is saved on the message so the admin dashboard
- * shows whether the email actually went out.
- */
-const notifyByEmail = async (data, messageId, accessKey) => {
-  let ok = false;
-  let error = "";
-  try {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: accessKey || WEB3FORMS_KEY,
-        name: data.name,
-        email: data.email,
-        replyto: data.email,
-        subject: `Portfolio: ${data.subject || "New message"} (from ${data.name})`,
-        message: data.message,
-        from_name: "Mohan's Portfolio",
-      }),
-    });
-    const body = await res.json().catch(() => ({}));
-    ok = res.ok && body.success === true;
-    if (!ok) error = body.message || `HTTP ${res.status}`;
-  } catch (err) {
-    error = err?.message || "Network error";
-  }
-  if (!ok) console.warn("[contact] email notification failed:", error);
-  if (messageId) api.patch(`/messages/${messageId}/email`, { ok, error }).catch(() => {});
-};
-
 const Contact = () => {
   // The key set in Admin → Settings decides which inbox gets the email.
   const { settings } = useSite();
@@ -137,7 +92,7 @@ const Contact = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(contactSchema),
     defaultValues: initial,
     mode: "onTouched", // first check when a field is left, then live while it is fixed
   });
@@ -146,15 +101,13 @@ const Contact = () => {
     setStatus("idle");
     setServerError("");
     try {
-      // Persist to our own Express + MongoDB backend — this is the source of truth.
-      const { data: saved } = await api.post("/messages", data);
+      await sendContactMessage(data, settings?.web3formsKey);
       setStatus("success");
       reset(initial);
       setTimeout(() => setStatus("idle"), 5000);
-      notifyByEmail(data, saved?.id, settings?.web3formsKey);
     } catch (err) {
       setStatus("error");
-      setServerError(err?.response?.data?.message || "Something went wrong while sending. Please try again or email me directly.");
+      setServerError(err.message);
     }
   };
 
