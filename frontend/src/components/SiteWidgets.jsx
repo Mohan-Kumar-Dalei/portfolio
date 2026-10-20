@@ -1,20 +1,25 @@
+import { lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import ChatBot from "./ChatBot";
-import AmbientControls from "./AmbientControls";
-import SoundIntro from "./SoundIntro";
-import { isV2Path } from "../v2/VersionSwitch";
+import { isV1Path } from "../v2/VersionSwitch";
+
+// Music and interface sounds belong to v1 only, so they load with it.
+const AmbientControls = lazy(() => import("./AmbientControls"));
+const SoundIntro = lazy(() => import("./SoundIntro"));
 
 // Site-wide floating widgets — hidden on the admin area to avoid UI collisions.
-// The minimal v2 site keeps only the chatbot (no music or interface sounds).
+// The minimal v2 site (the default) keeps only the chatbot.
 const SiteWidgets = () => {
   const { pathname } = useLocation();
   if (pathname.startsWith("/admin")) return null;
-  if (isV2Path(pathname)) return <ChatBot />;
+  if (!isV1Path(pathname)) return <ChatBot />;
   return (
     <>
       <ChatBot />
-      <AmbientControls />
-      <SoundIntro />
+      <Suspense fallback={null}>
+        <AmbientControls />
+        <SoundIntro />
+      </Suspense>
     </>
   );
 };

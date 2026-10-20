@@ -95,14 +95,14 @@ const HorizontalProjects = ({ projects = [] }) => {
             Full-stack products, AI systems and tools, built end to end. Keep scrolling to move through them.
           </p>
           <div className="mt-8">
-            <ArrowLink to="/projects" data-testid="projects-viewall">All projects</ArrowLink>
+            <ArrowLink to="/v1/projects" data-testid="projects-viewall">All projects</ArrowLink>
           </div>
         </div>
 
         {list.map((p, i) => (
           <Link
             key={p._id || i}
-            to={`/projects/${p._id}`}
+            to={`/v1/projects/${p._id}`}
             data-cursor="view"
             data-cursor-label="Open"
             className="work-card group relative shrink-0 w-[82vw] md:w-[58vw] lg:w-[46vw] h-[58svh] md:h-[62vh] overflow-hidden rounded-[1.5rem] border border-border bg-surface"

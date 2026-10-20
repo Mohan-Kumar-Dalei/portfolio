@@ -6,13 +6,13 @@ import { LINKS } from "../utils/links";
 import { Roll } from "./editorial";
 
 const footerNav = [
-  { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Projects", to: "/projects" },
-  { label: "Experience", to: "/experience" },
-  { label: "Services", to: "/services" },
-  { label: "Blog", to: "/blog" },
-  { label: "Contact", to: "/contact" },
+  { label: "Home", to: "/v1" },
+  { label: "About", to: "/v1/about" },
+  { label: "Projects", to: "/v1/projects" },
+  { label: "Experience", to: "/v1/experience" },
+  { label: "Services", to: "/v1/services" },
+  { label: "Blog", to: "/v1/blog" },
+  { label: "Contact", to: "/v1/contact" },
 ];
 
 const useIndiaTime = () => {

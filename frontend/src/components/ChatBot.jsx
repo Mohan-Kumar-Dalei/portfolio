@@ -85,7 +85,6 @@ const ChatBot = () => {
         aria-expanded={open}
         className="fixed bottom-6 right-6 z-[85] grid h-14 w-14 place-items-center rounded-full bg-primary text-primary-foreground shadow-lg"
       >
-        <span className="absolute inset-0 rounded-full bg-primary animate-ping opacity-20" />
         <motion.span animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="relative">
           {open ? <X size={24} /> : <SarhaIcon size={30} />}
         </motion.span>

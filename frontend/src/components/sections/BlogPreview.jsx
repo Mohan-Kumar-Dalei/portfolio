@@ -12,7 +12,7 @@ export const JournalCard = ({ b, i = 0, testid = "blog-card" }) => (
     viewport={{ once: true, margin: "-40px" }}
     transition={{ duration: 0.9, delay: (i % 3) * 0.08, ease: EASE_OUT }}
   >
-    <Link to={`/blog/${b.slug}`} className="group block" data-cursor="view" data-cursor-label="Read" data-testid={testid}>
+    <Link to={`/v1/blog/${b.slug}`} className="group block" data-cursor="view" data-cursor-label="Read" data-testid={testid}>
       <div className="overflow-hidden rounded-[1.25rem]">
         <RevealImage
           src={b.coverImage}
@@ -55,7 +55,7 @@ const BlogPreview = ({ blogs = [] }) => {
         </div>
 
         <div className="mt-12 flex justify-end">
-          <ArrowLink to="/blog" data-testid="blog-preview-viewall">All articles</ArrowLink>
+          <ArrowLink to="/v1/blog" data-testid="blog-preview-viewall">All articles</ArrowLink>
         </div>
       </div>
     </section>

@@ -11,7 +11,7 @@ import { PostRow, fmtDate } from "./Home";
 
 const Back = () => (
   <div className="v2-rule-b">
-    <Link to="/v2/blog" className="group inline-flex items-center gap-1.5 px-4 py-3 text-sm text-ink-muted transition-colors hover:text-ink sm:px-5">
+    <Link to="/blog" className="group inline-flex items-center gap-1.5 px-4 py-3 text-sm text-ink-muted transition-colors hover:text-ink sm:px-5">
       <ArrowLeft aria-hidden className="size-4 transition-transform group-hover:-translate-x-0.5" /> All writing
     </Link>
   </div>

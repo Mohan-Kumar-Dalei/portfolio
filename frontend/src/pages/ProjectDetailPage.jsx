@@ -60,7 +60,7 @@ const ProjectDetailPage = () => {
       <PageTransition>
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-6">
           <h1 className="title-xl text-5xl">Project not found</h1>
-          <Link to="/projects" className="text-primary u-link-static">← Back to projects</Link>
+          <Link to="/v1/projects" className="text-primary u-link-static">← Back to projects</Link>
         </div>
       </PageTransition>
     );
@@ -99,7 +99,7 @@ const ProjectDetailPage = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40" />
         </div>
         <div className="pd-title absolute inset-x-0 bottom-0 z-10 wrap pb-12 md:pb-16 text-white">
-          <button onClick={() => navigate("/projects")} className="group mb-8 inline-flex items-center gap-2 label text-white/80 hover:text-white" data-testid="project-back">
+          <button onClick={() => navigate("/v1/projects")} className="group mb-8 inline-flex items-center gap-2 label text-white/80 hover:text-white" data-testid="project-back">
             <ArrowLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1" /> All projects
           </button>
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: d, duration: 0.8 }} className="label text-white/70">
@@ -202,7 +202,7 @@ const ProjectDetailPage = () => {
       {next && (
         <section className="wrap pb-20 md:pb-28">
           <Link
-            to={`/projects/${next._id}`}
+            to={`/v1/projects/${next._id}`}
             className="group relative flex min-h-[20rem] md:min-h-[28rem] flex-col justify-end overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem] bg-surface"
             data-cursor="view"
             data-cursor-label="Next"

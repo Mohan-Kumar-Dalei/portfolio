@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Search } from "lucide-react";
 import { useSite } from "../../context/SiteContext";
+import { pageTitle } from "../../seo";
 import { Hatch, Section } from "../ui";
 import { PostRow } from "./Home";
 
@@ -21,7 +22,7 @@ const Blog = () => {
   return (
     <>
       <Helmet>
-        <title>Writing · Mohan Kumar Dalei</title>
+        <title>{pageTitle("/blog")}</title>
       </Helmet>
       <div className="v2-fade v2-rule-b p-5 sm:p-8">
         <p className="v2-label">/blog</p>

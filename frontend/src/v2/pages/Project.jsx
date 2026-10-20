@@ -172,7 +172,7 @@ const Project = () => {
         {next && next._id !== project._id && (
           <>
             <Hatch />
-            <Link to={`/v2/projects/${next._id}`} className="group flex items-center gap-4 px-5 py-6 transition-colors hover:bg-chip sm:px-8">
+            <Link to={`/projects/${next._id}`} className="group flex items-center gap-4 px-5 py-6 transition-colors hover:bg-chip sm:px-8">
               <span className="min-w-0 flex-1">
                 <span className="v2-label block">Next project</span>
                 <span className="mt-1 block truncate text-2xl font-semibold tracking-[-0.03em] transition-colors group-hover:text-[var(--accent)]">{next.title}</span>

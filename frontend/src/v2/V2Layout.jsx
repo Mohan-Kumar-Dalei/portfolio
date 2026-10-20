@@ -41,7 +41,7 @@ const Header = ({ onSearch }) => {
   return (
     <header className="v2-header sticky top-0 z-50 border-b border-border">
       <div className="v2-frame flex h-12 items-stretch">
-        <Link to="/v2" className="flex items-center px-4 text-[15px] font-semibold tracking-[-0.02em] sm:px-5" data-testid="v2-logo">
+        <Link to="/" className="flex items-center px-4 text-[15px] font-semibold tracking-[-0.02em] sm:px-5" data-testid="v2-logo">
           Mohan<span className="text-[var(--accent)]">.</span>
         </Link>
         <nav aria-label="Primary" className="hidden items-stretch border-l border-border md:flex">
@@ -49,7 +49,7 @@ const Header = ({ onSearch }) => {
             <button
               key={id}
               type="button"
-              onClick={() => (id === "blog" ? navigate("/v2/blog") : goToSection(navigate, id))}
+              onClick={() => (id === "blog" ? navigate("/blog") : goToSection(navigate, id))}
               className="px-3.5 text-sm text-ink-muted transition-colors hover:bg-chip hover:text-ink"
             >
               {label}

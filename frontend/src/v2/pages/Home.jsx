@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, FileText, Github, Lightbulb, Link2, Linkedin, Loader2, Mail, MapPin } from "lucide-react";
 import { useSite } from "../../context/SiteContext";
+import { pageTitle } from "../../seo";
 import { LINKS } from "../../utils/links";
 import { fileUrl } from "../../lib/api";
 import { contactSchema, sendContactMessage } from "../../lib/contact";
@@ -233,7 +234,7 @@ const firstSentence = (text = "") => (String(text).match(/[^.!?]+[.!?]/) || [Str
 
 const ProjectCell = ({ p, i }) => {
   const live = p.liveLink && p.liveLink !== "#" ? p.liveLink : "";
-  const to = `/v2/projects/${p._id}`;
+  const to = `/projects/${p._id}`;
   return (
     <article className="group flex flex-col transition-colors hover:bg-chip">
       <Link to={to} tabIndex={-1} aria-hidden className="relative block aspect-[16/10] overflow-hidden border-b border-border bg-surface">
@@ -420,7 +421,7 @@ const Education = ({ n }) => (
 /* ── Writing ─────────────────────────────────────────────── */
 
 export const PostRow = ({ post }) => (
-  <Link to={`/v2/blog/${post.slug}`} className="group grid border-b border-border transition-colors last:border-0 hover:bg-chip sm:grid-cols-[8.5rem_1fr_3.5rem]">
+  <Link to={`/blog/${post.slug}`} className="group grid border-b border-border transition-colors last:border-0 hover:bg-chip sm:grid-cols-[8.5rem_1fr_3.5rem]">
     <span className="px-4 pt-4 font-mono text-xs text-ink-muted sm:border-r sm:border-border sm:px-5 sm:py-4">{fmtDate(post.createdAt)}</span>
     <span className="min-w-0 px-4 pb-4 pt-1 sm:px-5 sm:py-4">
       <span className="block text-[16px] font-medium leading-snug transition-colors group-hover:text-[var(--accent)]">{post.title}</span>
@@ -449,7 +450,7 @@ const Writing = ({ n }) => {
           {posts.slice(0, 4).map((b) => (
             <PostRow key={b.slug} post={b} />
           ))}
-          <Link to="/v2/blog" className="flex items-center justify-center gap-2 border-t border-border py-3.5 text-sm font-medium transition-colors hover:bg-chip">
+          <Link to="/blog" className="flex items-center justify-center gap-2 border-t border-border py-3.5 text-sm font-medium transition-colors hover:bg-chip">
             Read all writing <ArrowRight aria-hidden className="size-4" />
           </Link>
         </>
@@ -567,8 +568,10 @@ const Contact = ({ n }) => {
 
 /* ── Page ────────────────────────────────────────────────── */
 
-const Home = () => {
-  const { hash, state } = useLocation();
+// `section`: set on the aliases of v1 page URLs (/about, /projects, …), which
+// open the home page at that section.
+const Home = ({ section }) => {
+  const { pathname, hash, state } = useLocation();
   const { loaded, testimonials = [] } = useSite();
 
   const order = SECTIONS.map(([id]) => id).filter((id) => id !== "testimonials" || testimonials.length);
@@ -577,8 +580,8 @@ const Home = () => {
   // Arriving with #section (from a sub-page or the version switch): scroll
   // there once it exists, and again after the API data has filled the page.
   useEffect(() => {
-    if (!hash || state?.noScroll) return;
-    const id = decodeURIComponent(hash.slice(1));
+    const id = hash ? decodeURIComponent(hash.slice(1)) : section;
+    if (!id || state?.noScroll) return;
     let tries = 0;
     const t = setInterval(() => {
       const el = document.getElementById(id);
@@ -586,12 +589,12 @@ const Home = () => {
       el?.scrollIntoView({ block: "start" });
     }, 50);
     return () => clearInterval(t);
-  }, [hash, state, loaded]);
+  }, [hash, section, state, loaded]);
 
   return (
     <>
       <Helmet>
-        <title>Mohan Kumar Dalei · MERN Stack Developer</title>
+        <title>{pageTitle(pathname)}</title>
       </Helmet>
       <Hero />
       <Hatch />

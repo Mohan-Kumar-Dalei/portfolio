@@ -67,7 +67,7 @@ const BlogPage = () => {
           {showFeatured && (
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: EASE_OUT }}>
               <Link
-                to={`/blog/${featured.slug}`}
+                to={`/v1/blog/${featured.slug}`}
                 data-cursor="view"
                 data-cursor-label="Read"
                 className="group relative mb-20 block overflow-hidden rounded-[1.75rem] min-h-[28rem] md:min-h-[34rem]"

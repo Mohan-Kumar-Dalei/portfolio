@@ -51,7 +51,7 @@ const CTA = () => {
           <div className="cta-foot mt-10 flex flex-col sm:flex-row items-center gap-6">
             <MagneticButton
               as={Link}
-              to="/contact"
+              to="/v1/contact"
               strength={0.35}
               className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 font-semibold text-black"
               data-testid="cta-contact-btn"

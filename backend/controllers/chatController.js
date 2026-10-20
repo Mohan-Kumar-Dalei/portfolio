@@ -35,6 +35,20 @@ HOW TO ANSWER
 - If asked who you are or which model powers you: you are SARHA, Mohan's portfolio assistant. Never
   name the underlying AI provider or model.`;
 
+// The model has no clock of its own: give it the real date and time (India)
+// on every request, so "what's the date / time / year?" and "how long has he
+// worked there?" are answered correctly.
+const nowLine = () => {
+  const now = new Date();
+  const ist = (opts) => now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata", ...opts });
+  return [
+    "CURRENT DATE & TIME (use this; never guess or rely on your training date):",
+    `- Right now in India (IST, UTC+5:30): ${ist({ weekday: "long", day: "numeric", month: "long", year: "numeric" })}, ${ist({ hour: "numeric", minute: "2-digit", hour12: true })}.`,
+    `- Current year: ${ist({ year: "numeric" })}. ISO date: ${now.toISOString().slice(0, 10)} (UTC).`,
+    "- Answer date, time, day and year questions from this, and use it to work out durations (for example how long Mohan has held a role).",
+  ].join("\n");
+};
+
 // Feed the model live portfolio data so answers stay in sync with the CMS.
 const buildSystemPrompt = async () => {
   try {
@@ -44,7 +58,7 @@ const buildSystemPrompt = async () => {
       Blog.find({ published: true }, { title: 1, slug: 1, category: 1 }).sort({ createdAt: -1 }).limit(8).lean(),
     ]);
     const site = s || {};
-    const lines = [BASE_PROMPT, "", KNOWLEDGE, "", "CONTACT & LINKS:"];
+    const lines = [BASE_PROMPT, "", nowLine(), "", KNOWLEDGE, "", "CONTACT & LINKS:"];
     lines.push(`- Email: ${site.email || ""}`);
     lines.push(`- Availability: ${site.availability || ""}`);
     lines.push(`- Location: ${site.location || ""}`);
@@ -68,7 +82,7 @@ const buildSystemPrompt = async () => {
     return lines.join("\n");
   } catch (err) {
     console.error("[chat] prompt build failed", err);
-    return `${BASE_PROMPT}\n\n${KNOWLEDGE}`;
+    return `${BASE_PROMPT}\n\n${nowLine()}\n\n${KNOWLEDGE}`;
   }
 };
 

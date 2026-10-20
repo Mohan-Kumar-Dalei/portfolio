@@ -77,7 +77,7 @@ const Services = () => {
         </div>
 
         <div className="mt-8 flex justify-end">
-          <ArrowLink to="/services">All services</ArrowLink>
+          <ArrowLink to="/v1/services">All services</ArrowLink>
         </div>
       </div>
     </section>

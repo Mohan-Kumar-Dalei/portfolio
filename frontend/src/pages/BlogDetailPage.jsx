@@ -53,7 +53,7 @@ const BlogDetailPage = () => {
       <PageTransition>
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 px-6">
           <h1 className="title-xl text-5xl">Article not found</h1>
-          <Link to="/blog" className="text-primary">← Back to blog</Link>
+          <Link to="/v1/blog" className="text-primary">← Back to blog</Link>
         </div>
       </PageTransition>
     );
@@ -83,7 +83,7 @@ const BlogDetailPage = () => {
       <header className="relative pt-28 md:pt-36 pb-12 overflow-hidden">
         <div aria-hidden className="glow-blob w-[40rem] h-[40rem] -right-40 -top-60 opacity-40" />
         <div className="relative wrap">
-          <Link to="/blog" className="group inline-flex items-center gap-2 label text-ink-muted hover:text-ink mb-10" data-testid="blog-back">
+          <Link to="/v1/blog" className="group inline-flex items-center gap-2 label text-ink-muted hover:text-ink mb-10" data-testid="blog-back">
             <ArrowLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1" /> All articles
           </Link>
           {!blog.published && (
@@ -150,7 +150,7 @@ const BlogDetailPage = () => {
             <h2 className="title-xl text-3xl md:text-5xl mb-12 border-t border-border pt-8">Related <span className="text-gradient">reading.</span></h2>
             <div className="grid md:grid-cols-3 gap-6">
               {related.map((b) => (
-                <Link key={b._id} to={`/blog/${b.slug}`} className="group block" data-testid="blog-related-card">
+                <Link key={b._id} to={`/v1/blog/${b.slug}`} className="group block" data-testid="blog-related-card">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-[1.25rem]">
                     <img src={b.coverImage} alt={b.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   </div>

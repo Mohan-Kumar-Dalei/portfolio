@@ -88,7 +88,7 @@ const ProjectsPage = () => {
                   className={`group min-w-0 ${i % 2 === 1 ? "md:mt-24" : ""}`}
                   data-testid="project-grid-card"
                 >
-                  <Link to={`/projects/${p._id}`} data-cursor="view" data-cursor-label="Open" className="relative block aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-surface">
+                  <Link to={`/v1/projects/${p._id}`} data-cursor="view" data-cursor-label="Open" className="relative block aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-surface">
                     <ProjectImage src={p.image} title={p.title} className="h-full w-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-100" />
                     <span className="absolute left-5 top-5 rounded-full bg-black/40 backdrop-blur px-3 py-1 label text-white">{p.category}</span>
@@ -99,7 +99,7 @@ const ProjectsPage = () => {
                   <div className="mt-5 flex items-start justify-between gap-6">
                     <div className="min-w-0">
                       <div className="label text-ink-muted truncate">{String(i + 1).padStart(2, "0")} · {(p.techStack || []).slice(0, 3).join(" · ")}</div>
-                      <Link to={`/projects/${p._id}`} className="mt-2 block title-xl break-words text-[clamp(1.35rem,2.8cqi,3.5rem)] hover:text-primary transition-colors duration-300" data-testid="project-detail-link">
+                      <Link to={`/v1/projects/${p._id}`} className="mt-2 block title-xl break-words text-[clamp(1.35rem,2.8cqi,3.5rem)] hover:text-primary transition-colors duration-300" data-testid="project-detail-link">
                         {p.title}
                       </Link>
                       <p className="mt-3 max-w-lg text-ink-muted line-clamp-2">{p.description}</p>

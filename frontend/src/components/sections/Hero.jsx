@@ -175,8 +175,8 @@ const Hero = () => {
           I craft <span className="accent-serif text-gradient">premium</span> digital products that feel alive.
         </p>
         <div className="hero-statement-cta mt-10 flex flex-wrap justify-center gap-8 text-white">
-          <ArrowLink to="/projects" data-testid="hero-cta-work">Selected work</ArrowLink>
-          <ArrowLink to="/contact" data-testid="hero-cta-contact">Let&apos;s talk</ArrowLink>
+          <ArrowLink to="/v1/projects" data-testid="hero-cta-work">Selected work</ArrowLink>
+          <ArrowLink to="/v1/contact" data-testid="hero-cta-contact">Let&apos;s talk</ArrowLink>
         </div>
       </div>
     </section>

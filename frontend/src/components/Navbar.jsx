@@ -10,17 +10,17 @@ import { LINKS } from "../utils/links";
 import { fileUrl } from "../lib/api";
 
 const navItems = [
-  { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Projects", to: "/projects" },
-  { label: "Experience", to: "/experience" },
-  { label: "Services", to: "/services" },
-  { label: "Blog", to: "/blog" },
-  { label: "Contact", to: "/contact" },
+  { label: "Home", to: "/v1" },
+  { label: "About", to: "/v1/about" },
+  { label: "Projects", to: "/v1/projects" },
+  { label: "Experience", to: "/v1/experience" },
+  { label: "Services", to: "/v1/services" },
+  { label: "Blog", to: "/v1/blog" },
+  { label: "Contact", to: "/v1/contact" },
 ];
 
 const EASE = [0.76, 0, 0.24, 1];
-const isActivePath = (pathname, to) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
+const isActivePath = (pathname, to) => (to === "/v1" ? pathname === "/v1" || pathname === "/v1/" : pathname.startsWith(to));
 
 /**
  * Floating island navbar. The bar is a liquid-glass pill styled after
@@ -95,7 +95,7 @@ const Navbar = () => {
           active={scrolled || open}
           className="glass-switch pointer-events-auto flex h-14 w-[min(84rem,calc(100vw-1.5rem))] items-center justify-between rounded-full pl-5 pr-2 text-ink"
         >
-            <Link to="/" className="font-display text-xl font-bold tracking-tight" data-testid="nav-logo">
+            <Link to="/v1" className="font-display text-xl font-bold tracking-tight" data-testid="nav-logo">
               <span className="text-gradient">MKD</span>
               <span className="text-primary">.</span>
             </Link>
@@ -121,7 +121,7 @@ const Navbar = () => {
                     key={item.label}
                     ref={(el) => (linkRefs.current[item.label] = el)}
                     to={item.to}
-                    end={item.to === "/"}
+                    end={item.to === "/v1"}
                     onMouseEnter={() => setHovered(item.label)}
                     data-testid={`nav-${item.label.toLowerCase()}`}
                     className={`relative rounded-full px-3 xl:px-4 py-2 text-sm font-medium transition-colors duration-200 ${
@@ -186,7 +186,7 @@ const Navbar = () => {
                 >
                   <NavLink
                     to={item.to}
-                    end={item.to === "/"}
+                    end={item.to === "/v1"}
                     data-testid={`mobile-nav-${item.label.toLowerCase()}`}
                     className={({ isActive }) =>
                       `flex items-baseline justify-between py-3 font-display text-4xl font-bold tracking-tight ${isActive ? "text-gradient" : "text-ink"}`

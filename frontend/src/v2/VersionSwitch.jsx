@@ -1,28 +1,25 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
-export const isV2Path = (pathname) => pathname === "/v2" || pathname.startsWith("/v2/");
+// v2 (the minimal site) is the default and lives at the root; v1 (the
+// animated site) lives under /v1 with the same page paths.
+export const isV1Path = (pathname) => pathname === "/v1" || pathname.startsWith("/v1/");
 
-// v1 pages that are sections on the single v2 page.
-const V1_TO_SECTION = { "/about": "about", "/experience": "experience", "/projects": "projects", "/contact": "contact", "/services": "contact" };
-const SECTION_TO_V1 = { about: "/about", stack: "/about", experience: "/experience", education: "/experience", certifications: "/experience", projects: "/projects", blog: "/blog", contact: "/contact" };
+// Home-page sections (v2) and the v1 page that covers each.
+const SECTION_TO_V1 = { about: "/about", stack: "/about", experience: "/experience", education: "/experience", projects: "/projects", blog: "/blog", contact: "/contact" };
 
 // The same content in the other version, so switching keeps your place.
+// v2 also answers v1's page paths (/about, /projects, …) by scrolling to that section.
 export const otherVersionPath = (pathname, hash = "") => {
-  if (isV2Path(pathname)) {
-    const rest = pathname.slice(3) || "/";
-    if (rest === "/" && hash) return SECTION_TO_V1[hash.slice(1)] || "/";
-    return rest;
-  }
-  if (pathname.startsWith("/blog") || /^\/projects\/[^/]+/.test(pathname)) return `/v2${pathname}`;
-  const section = V1_TO_SECTION[pathname];
-  return section ? `/v2#${section}` : "/v2";
+  if (isV1Path(pathname)) return pathname.slice(3) || "/";
+  const page = pathname === "/" ? SECTION_TO_V1[hash.slice(1)] || "" : pathname;
+  return `/v1${page}`;
 };
 
 /** Segmented v1 / v2 control. Styled from the theme tokens, so it fits both versions. */
 const VersionSwitch = ({ className = "" }) => {
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
-  const current = isV2Path(pathname) ? "v2" : "v1";
+  const current = isV1Path(pathname) ? "v1" : "v2";
 
   const go = (v) => {
     if (v !== current) navigate(otherVersionPath(pathname, hash));

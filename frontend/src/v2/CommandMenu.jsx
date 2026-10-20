@@ -75,7 +75,7 @@ const CommandMenu = ({ open, setOpen }) => {
               {label}
             </Item>
           ))}
-          <Item icon={Newspaper} value="page blog all posts" onSelect={run(() => navigate("/v2/blog"))} hint="/blog">
+          <Item icon={Newspaper} value="page blog all posts" onSelect={run(() => navigate("/blog"))} hint="/blog">
             All blog posts
           </Item>
         </Group>
@@ -83,7 +83,7 @@ const CommandMenu = ({ open, setOpen }) => {
         {projects.length > 0 && (
           <Group heading="Projects">
             {projects.map((p) => (
-              <Item key={p._id} icon={FolderGit2} value={`project ${p.title} ${p.category || ""}`} onSelect={run(() => navigate(`/v2/projects/${p._id}`))}>
+              <Item key={p._id} icon={FolderGit2} value={`project ${p.title} ${p.category || ""}`} onSelect={run(() => navigate(`/projects/${p._id}`))}>
                 {p.title}
               </Item>
             ))}
@@ -93,7 +93,7 @@ const CommandMenu = ({ open, setOpen }) => {
         {blogs.length > 0 && (
           <Group heading="Blog">
             {blogs.slice(0, 12).map((b) => (
-              <Item key={b.slug} icon={FileText} value={`post ${b.title}`} onSelect={run(() => navigate(`/v2/blog/${b.slug}`))}>
+              <Item key={b.slug} icon={FileText} value={`post ${b.title}`} onSelect={run(() => navigate(`/blog/${b.slug}`))}>
                 {b.title}
               </Item>
             ))}
@@ -113,7 +113,7 @@ const CommandMenu = ({ open, setOpen }) => {
           <Item icon={theme === "dark" ? Sun : Moon} value="theme dark light mode toggle" onSelect={run(toggle)}>
             Switch to {theme === "dark" ? "light" : "dark"} theme
           </Item>
-          <Item icon={Monitor} value="version v1 classic animated site" onSelect={run(() => navigate("/"))} hint="v1">
+          <Item icon={Monitor} value="version v1 classic animated site" onSelect={run(() => navigate("/v1"))} hint="v1">
             Open version 1 (animated site)
           </Item>
         </Group>
