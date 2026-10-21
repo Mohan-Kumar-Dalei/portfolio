@@ -15,7 +15,7 @@ import { fileUrl } from "../../lib/api";
 import { contactSchema, sendContactMessage } from "../../lib/contact";
 import ProjectImage from "../../components/ProjectImage";
 import Avatar from "../Avatar";
-import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, STACK, STATS } from "../data";
+import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, COVER_IMG, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, STACK, STATS } from "../data";
 import { Cells, Hatch, Section, TechLine, TimelineRow, btn, useClock } from "../ui";
 
 export const fmtDate = (d, opts = { month: "short", day: "numeric", year: "numeric" }) => (d ? new Date(d).toLocaleDateString("en-US", opts) : "");
@@ -103,9 +103,9 @@ const Hero = () => {
   return (
     <div className="v2-fade">
       {/* Cover */}
-      <div className="v2-rule-b relative grid aspect-[2.6/1] place-items-center overflow-hidden sm:aspect-[4/1]">
-        <div aria-hidden className="v2-dots absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_80%)]" />
-        <code className="relative px-4 text-center font-mono text-[11px] leading-relaxed text-ink-muted sm:text-[13px]">
+      <div className="v2-rule-b relative grid aspect-[2.6/1] place-items-center overflow-hidden bg-chip sm:aspect-[4/1]">
+        <img src={COVER_IMG} alt="" aria-hidden className="absolute inset-0 h-full w-full select-none object-cover object-[center_60%]" draggable={false} />
+        <code className="relative mx-4 rounded-lg border border-white/40 bg-[color-mix(in_srgb,var(--bg)_72%,transparent)] px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-ink-muted shadow-sm backdrop-blur-md sm:text-[13px]">
           <span className="text-[var(--accent)]">const</span> mohan = {"{"} stack: <span className="text-ink">&quot;MERN&quot;</span>, focus:{" "}
           <span className="text-ink">&quot;Agentic AI&quot;</span>, based: <span className="text-ink">&quot;Odisha&quot;</span> {"}"};
         </code>

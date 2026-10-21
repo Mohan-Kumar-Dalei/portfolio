@@ -33,6 +33,8 @@ import { TbApi, TbBrandFramerMotion, TbBrandMongodb } from "react-icons/tb";
 
 export const PROFILE_IMG = "https://ik.imagekit.io/h7wep5nji/portfolio-image/Profile?updatedAt=1789225097913";
 export const PROFILE_FALLBACK = "https://ik.imagekit.io/h7wep5nji/Photos/profile-png.png";
+// Banner image behind the profile. Swap in the ImageKit URL once uploaded there.
+export const COVER_IMG = "/v2-cover.webp";
 // Optional avatar picture for the profile flip; empty uses the drawn SVG avatar (Avatar.jsx).
 export const AVATAR_IMG = "";
 export const SITE_HOST = "mohankumardalei.apex-ui.in";
