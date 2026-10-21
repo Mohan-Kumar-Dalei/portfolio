@@ -103,11 +103,11 @@ const Hero = () => {
   return (
     <div className="v2-fade">
       {/* Cover */}
-      <div className="v2-rule-b relative grid aspect-[2.6/1] place-items-center overflow-hidden bg-chip sm:aspect-[4/1]">
-        <img src={COVER_IMG} alt="" aria-hidden className="absolute inset-0 h-full w-full select-none object-cover object-[center_60%]" draggable={false} />
-        <code className="relative mx-4 rounded-lg border border-white/40 bg-[color-mix(in_srgb,var(--bg)_72%,transparent)] px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-ink-muted shadow-sm backdrop-blur-md sm:text-[13px]">
-          <span className="text-[var(--accent)]">const</span> mohan = {"{"} stack: <span className="text-ink">&quot;MERN&quot;</span>, focus:{" "}
-          <span className="text-ink">&quot;Agentic AI&quot;</span>, based: <span className="text-ink">&quot;Odisha&quot;</span> {"}"};
+      <div className="v2-rule-b relative aspect-[2.2/1] overflow-hidden bg-chip sm:aspect-[3.2/1]">
+        <img src={COVER_IMG} alt="" aria-hidden className="absolute inset-0 h-full w-full select-none object-cover object-[center_22%]" draggable={false} />
+        <code className="absolute bottom-2.5 right-2.5 hidden rounded-md border border-white/30 bg-black/35 px-2.5 py-1 font-mono text-[11px] leading-relaxed text-white/85 backdrop-blur-sm sm:block">
+          <span className="text-emerald-300">const</span> mohan = {"{"} stack: <span className="text-white">&quot;MERN&quot;</span>, focus:{" "}
+          <span className="text-white">&quot;Agentic AI&quot;</span>, based: <span className="text-white">&quot;Odisha&quot;</span> {"}"};
         </code>
       </div>
 
