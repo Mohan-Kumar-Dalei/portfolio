@@ -5,9 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c1 8 4 11 12 12-8 1-11 4-12 12-1-8-4-11-12-12 8-1 11-4 12-12z"/></svg>';
-
-/** Sparkle star: a star twinkles at every click / tap (styles: .v2-burst). */
+/** Double ring pulse: two rings spread from every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -18,24 +16,8 @@ export const useClickBurst = () => {
       burst.setAttribute("aria-hidden", "true");
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
-      // one main star, two small ones nearby a beat later
-      const stars = [
-        { s: 26, x: 0, y: 0, d: 0 },
-        { s: 11, x: 18 + Math.random() * 6, y: -(14 + Math.random() * 8), d: 0.08 },
-        { s: 9, x: -(16 + Math.random() * 6), y: 10 + Math.random() * 8, d: 0.14 },
-      ];
-      for (const st of stars) {
-        const wrap = document.createElement("span");
-        wrap.innerHTML = STAR;
-        const svg = wrap.firstChild;
-        svg.style.setProperty("--s", `${st.s}px`);
-        svg.style.setProperty("--x", `${st.x}px`);
-        svg.style.setProperty("--y", `${st.y}px`);
-        svg.style.setProperty("--d", `${st.d}s`);
-        burst.appendChild(svg);
-      }
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 950);
+      setTimeout(() => burst.remove(), 800);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);
