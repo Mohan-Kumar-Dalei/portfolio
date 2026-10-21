@@ -161,7 +161,7 @@ const Hero = () => {
         <iframe
           title="Spotify: what I am listening to"
           src={spotifyEmbedSrc(settings?.spotifyUrl) || DEFAULT_TRACK}
-          className="h-[152px] w-full rounded-xl border-0 sm:w-[60%]"
+          className="h-[152px] w-full rounded-xl border-0 sm:w-1/2"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           allowFullScreen
           loading="lazy"
