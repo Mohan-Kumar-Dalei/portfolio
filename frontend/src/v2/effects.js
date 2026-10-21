@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Water drop: a drop falls and ripples spread at every click / tap (styles: .v2-burst). */
+/** Water splash: a drop falls, droplets jump and ripples spread at every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -17,7 +17,17 @@ export const useClickBurst = () => {
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
       burst.appendChild(document.createElement("b")); // the drop
-      for (const d of [0.22, 0.38, 0.54]) {
+      for (let i = 0; i < 6; i++) {
+        // droplets fan out to both sides, the middle ones jumping highest
+        const side = i % 2 ? 1 : -1;
+        const spread = 10 + Math.floor(i / 2) * 11 + Math.random() * 6;
+        const drop = document.createElement("em");
+        drop.style.setProperty("--dx", `${side * spread}px`);
+        drop.style.setProperty("--up", `${-(30 - Math.floor(i / 2) * 7 + Math.random() * 8)}px`);
+        drop.style.setProperty("--s", `${3 + Math.round(Math.random() * 2)}px`);
+        burst.appendChild(drop);
+      }
+      for (const d of [0.22, 0.4]) {
         const ring = document.createElement("i");
         ring.style.setProperty("--d", `${d}s`);
         burst.appendChild(ring);
