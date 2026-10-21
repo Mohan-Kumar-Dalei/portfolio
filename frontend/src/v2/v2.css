@@ -222,7 +222,8 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click burst: a ring and eight sparks from the pointer */
+/* Click mark: a small "+" (like the frame corners) spins open and fades,
+   with a dot that pops in the middle */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -230,45 +231,46 @@ html.is-v2 ::selection {
   height: 0;
   pointer-events: none;
 }
-.v2-burst::before {
+.v2-burst::before,
+.v2-burst::after {
   content: "";
   position: absolute;
-  left: -28px;
-  top: -28px;
-  width: 56px;
-  height: 56px;
+}
+.v2-burst::before {
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  border: 2px solid var(--accent);
-  animation: v2-ring 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-.v2-burst i {
-  position: absolute;
-  left: -1px;
-  top: 0;
-  width: 2px;
-  height: 11px;
-  border-radius: 2px;
   background: var(--accent);
-  transform-origin: 50% 0;
-  animation: v2-spark 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: v2-tap-dot 0.4s ease-out forwards;
 }
-@keyframes v2-ring {
-  from {
-    transform: scale(0.15);
-    opacity: 0.9;
-  }
-  to {
-    transform: scale(1.35);
-    opacity: 0;
-  }
+.v2-burst::after {
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(var(--accent), var(--accent)) center / 100% 1.5px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center / 1.5px 100% no-repeat;
+  animation: v2-tap-plus 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes v2-spark {
+@keyframes v2-tap-dot {
   from {
-    transform: rotate(var(--a)) translateY(6px) scaleY(1);
+    transform: scale(1);
     opacity: 1;
   }
   to {
-    transform: rotate(var(--a)) translateY(34px) scaleY(0.2);
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes v2-tap-plus {
+  from {
+    transform: rotate(0deg) scale(0.3);
+    opacity: 1;
+  }
+  to {
+    transform: rotate(90deg) scale(1.25);
     opacity: 0;
   }
 }

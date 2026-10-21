@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** A ring and a few sparks burst from every click / tap. */
+/** A small "+" spins open from every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -16,13 +16,8 @@ export const useClickBurst = () => {
       burst.setAttribute("aria-hidden", "true");
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
-      for (let i = 0; i < 8; i++) {
-        const spark = document.createElement("i");
-        spark.style.setProperty("--a", `${i * 45 + 22}deg`);
-        burst.appendChild(spark);
-      }
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 700);
+      setTimeout(() => burst.remove(), 550);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);
