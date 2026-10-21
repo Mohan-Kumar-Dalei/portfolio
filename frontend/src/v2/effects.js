@@ -5,7 +5,9 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Water splash: a drop falls, droplets jump and ripples spread at every click / tap (styles: .v2-burst). */
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c1 8 4 11 12 12-8 1-11 4-12 12-1-8-4-11-12-12 8-1 11-4 12-12z"/></svg>';
+
+/** Sparkle star: a star twinkles at every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -16,24 +18,24 @@ export const useClickBurst = () => {
       burst.setAttribute("aria-hidden", "true");
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
-      burst.appendChild(document.createElement("b")); // the drop
-      for (let i = 0; i < 6; i++) {
-        // droplets fan out to both sides, the middle ones jumping highest
-        const side = i % 2 ? 1 : -1;
-        const spread = 10 + Math.floor(i / 2) * 11 + Math.random() * 6;
-        const drop = document.createElement("em");
-        drop.style.setProperty("--dx", `${side * spread}px`);
-        drop.style.setProperty("--up", `${-(30 - Math.floor(i / 2) * 7 + Math.random() * 8)}px`);
-        drop.style.setProperty("--s", `${3 + Math.round(Math.random() * 2)}px`);
-        burst.appendChild(drop);
-      }
-      for (const d of [0.22, 0.4]) {
-        const ring = document.createElement("i");
-        ring.style.setProperty("--d", `${d}s`);
-        burst.appendChild(ring);
+      // one main star, two small ones nearby a beat later
+      const stars = [
+        { s: 26, x: 0, y: 0, d: 0 },
+        { s: 11, x: 18 + Math.random() * 6, y: -(14 + Math.random() * 8), d: 0.08 },
+        { s: 9, x: -(16 + Math.random() * 6), y: 10 + Math.random() * 8, d: 0.14 },
+      ];
+      for (const st of stars) {
+        const wrap = document.createElement("span");
+        wrap.innerHTML = STAR;
+        const svg = wrap.firstChild;
+        svg.style.setProperty("--s", `${st.s}px`);
+        svg.style.setProperty("--x", `${st.x}px`);
+        svg.style.setProperty("--y", `${st.y}px`);
+        svg.style.setProperty("--d", `${st.d}s`);
+        burst.appendChild(svg);
       }
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 1400);
+      setTimeout(() => burst.remove(), 950);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);

@@ -222,9 +222,9 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click mark: a water splash. A drop falls onto the pointer; where it lands
-   droplets jump up and out and fall back, and ripples spread, flattened
-   like rings on a water surface seen at an angle. */
+/* Click mark: sparkle star. A four-point star grows, turns and twinkles out
+   at the pointer, with two small stars blinking a beat later
+   (positions set per click in effects.js). */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -232,76 +232,30 @@ html.is-v2 ::selection {
   height: 0;
   pointer-events: none;
 }
-.v2-burst b {
+.v2-burst svg {
   position: absolute;
-  left: -4px;
-  top: -10px;
-  width: 8px;
-  height: 11px;
-  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-  background: var(--accent);
-  animation: v2-drop 0.32s cubic-bezier(0.55, 0, 1, 0.45) forwards;
-}
-.v2-burst i {
-  position: absolute;
-  left: -38px;
-  top: -16px;
-  width: 76px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  opacity: 0;
-  animation: v2-wave 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--d) forwards;
-}
-.v2-burst em {
-  position: absolute;
-  left: calc(var(--s) / -2);
-  top: calc(var(--s) / -2);
+  left: calc(var(--s) / -2 + var(--x, 0px));
+  top: calc(var(--s) / -2 + var(--y, 0px));
   width: var(--s);
   height: var(--s);
-  border-radius: 50%;
-  background: var(--accent);
-  opacity: 0;
-  animation: v2-splash 0.6s linear 0.22s forwards;
+  fill: var(--accent);
+  animation: v2-sparkle 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both;
 }
-/* up and out, then gravity pulls each droplet back down */
-@keyframes v2-splash {
+@keyframes v2-sparkle {
   0% {
-    transform: translate(0, 0) scale(0.6);
-    opacity: 1;
-    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
-  }
-  45% {
-    transform: translate(calc(var(--dx) * 0.6), var(--up)) scale(1);
-    opacity: 1;
-    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6);
-  }
-  100% {
-    transform: translate(var(--dx), 14px) scale(0.5);
+    transform: scale(0) rotate(-30deg);
     opacity: 0;
   }
-}
-@keyframes v2-drop {
-  0% {
-    transform: translateY(-26px) scale(0.7);
-    opacity: 0;
+  35% {
+    transform: scale(1.1) rotate(15deg);
+    opacity: 1;
   }
-  70% {
-    transform: translateY(0) scale(1);
+  60% {
+    transform: scale(0.85) rotate(30deg);
     opacity: 1;
   }
   100% {
-    transform: translateY(4px) scale(1.6, 0.2);
-    opacity: 0;
-  }
-}
-@keyframes v2-wave {
-  0% {
-    transform: scale(0.08);
-    opacity: 0.95;
-  }
-  100% {
-    transform: scale(1);
+    transform: scale(0) rotate(60deg);
     opacity: 0;
   }
 }
