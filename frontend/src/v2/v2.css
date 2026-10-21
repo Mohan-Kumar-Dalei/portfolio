@@ -237,21 +237,21 @@ html.is-v2 ::selection {
   position: absolute;
 }
 .v2-burst::before {
-  left: -3px;
-  top: -3px;
-  width: 6px;
-  height: 6px;
+  left: -4.5px;
+  top: -4.5px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--accent);
   animation: v2-tap-dot 0.4s ease-out forwards;
 }
 .v2-burst::after {
-  left: -9px;
-  top: -9px;
-  width: 18px;
-  height: 18px;
-  background: linear-gradient(var(--accent), var(--accent)) center / 100% 1.5px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) center / 1.5px 100% no-repeat;
+  left: -15px;
+  top: -15px;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat,
+    linear-gradient(var(--accent), var(--accent)) center / 2px 100% no-repeat;
   animation: v2-tap-plus 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes v2-tap-dot {
