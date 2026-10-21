@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Two square outlines turn and open out from every click / tap (styles: .v2-burst). */
+/** A soft ripple spreads from every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;

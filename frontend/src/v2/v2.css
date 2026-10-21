@@ -222,8 +222,8 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click mark: two square outlines (like the boxed layout) turn 45deg and
-   open out from the pointer, the second a beat behind the first */
+/* Click mark: a soft ripple, a lightly filled circle that spreads out from
+   the pointer and fades, like a drop on water */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -231,30 +231,28 @@ html.is-v2 ::selection {
   height: 0;
   pointer-events: none;
 }
-.v2-burst::before,
-.v2-burst::after {
+.v2-burst::before {
   content: "";
   position: absolute;
-  left: -14px;
-  top: -14px;
-  width: 28px;
-  height: 28px;
-  border: 2px solid var(--accent);
-  border-radius: 6px;
-  animation: v2-tap-box 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  left: -32px;
+  top: -32px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 38%, transparent) 0%, color-mix(in srgb, var(--accent) 18%, transparent) 60%, transparent 72%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  animation: v2-ripple 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-.v2-burst::after {
-  border-width: 1px;
-  opacity: 0;
-  animation-delay: 0.08s;
-}
-@keyframes v2-tap-box {
+@keyframes v2-ripple {
   from {
-    transform: rotate(0deg) scale(0.35);
+    transform: scale(0);
     opacity: 1;
   }
+  60% {
+    opacity: 0.7;
+  }
   to {
-    transform: rotate(45deg) scale(1.5);
+    transform: scale(1);
     opacity: 0;
   }
 }
