@@ -15,6 +15,17 @@ export const Hatch = () => (
   </div>
 );
 
+// Splits a title into words so they can rise in one after another (see .v2-word).
+const Words = ({ text }) =>
+  typeof text === "string"
+    ? text.split(" ").map((w, i, all) => (
+        <span key={i} className="v2-word" style={{ "--i": i }}>
+          {w}
+          {i < all.length - 1 ? " " : ""}
+        </span>
+      ))
+    : text;
+
 /** Section with a boxed header row: number | title | meta. */
 export const Section = ({ id, n, title, meta, children }) => (
   <section id={id} className="v2-section" aria-labelledby={`${id}-title`}>
@@ -23,7 +34,7 @@ export const Section = ({ id, n, title, meta, children }) => (
         <span className="grid w-12 shrink-0 place-items-center border-r border-border font-mono text-xs text-[var(--accent)] sm:w-14">{n}</span>
       )}
       <h2 id={`${id}-title`} className="flex-1 px-4 py-3 text-[1.6rem] font-semibold leading-tight tracking-[-0.035em] sm:px-5 sm:text-[1.85rem]">
-        {title}
+        <Words text={title} />
       </h2>
       {meta && <span className="hidden items-center border-l border-border px-4 v2-label sm:flex">{meta}</span>}
     </div>

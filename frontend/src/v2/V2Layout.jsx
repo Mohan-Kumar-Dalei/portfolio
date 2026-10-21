@@ -7,6 +7,7 @@ import VersionSwitch from "./VersionSwitch";
 import CommandMenu from "./CommandMenu";
 import { goToSection } from "./scroll";
 import { useVisits } from "../lib/visits";
+import { useClickBurst, useScrollReveal } from "./effects";
 import { Cells, Hatch } from "./ui";
 
 const FONT_ID = "v2-font";
@@ -134,6 +135,8 @@ const Footer = () => (
 
 const V2Layout = () => {
   useV2Document();
+  useClickBurst();
+  useScrollReveal();
   const [searchOpen, setSearchOpen] = useState(false);
   const { pathname, hash } = useLocation();
   const { disableAll } = useSound();
