@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Double ring pulse: two rings spread from every click / tap (styles: .v2-burst). */
+/** Water drop: a drop falls and ripples spread at every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -16,8 +16,14 @@ export const useClickBurst = () => {
       burst.setAttribute("aria-hidden", "true");
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
+      burst.appendChild(document.createElement("b")); // the drop
+      for (const d of [0.22, 0.38, 0.54]) {
+        const ring = document.createElement("i");
+        ring.style.setProperty("--d", `${d}s`);
+        burst.appendChild(ring);
+      }
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 800);
+      setTimeout(() => burst.remove(), 1400);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);
