@@ -8,6 +8,18 @@ import { useSite } from "../../context/SiteContext";
 import { pageTitle } from "../../seo";
 import { spotifyEmbedSrc } from "../../lib/spotify";
 
+// The code line on the banner, typed out with a scramble on page load.
+const COVER_CODE = [
+  { text: "const", className: "text-emerald-300" },
+  { text: " mohan = { stack: " },
+  { text: "\"MERN\"", className: "text-white" },
+  { text: ", focus: " },
+  { text: "\"Agentic AI\"", className: "text-white" },
+  { text: ", based: " },
+  { text: "\"Odisha\"", className: "text-white" },
+  { text: " };" },
+];
+
 // Shown when no Spotify link is set in Admin → Settings.
 const DEFAULT_TRACK = "https://open.spotify.com/embed/track/3quDxSlhbr2G922sGMcO8B?utm_source=generator";
 import { LINKS } from "../../utils/links";
@@ -15,6 +27,7 @@ import { fileUrl } from "../../lib/api";
 import { contactSchema, sendContactMessage } from "../../lib/contact";
 import ProjectImage from "../../components/ProjectImage";
 import Avatar from "../Avatar";
+import Scramble from "../Scramble";
 import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, COVER_IMG, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, STACK, STATS } from "../data";
 import { Cells, Hatch, Section, TechLine, TimelineRow, btn, useClock } from "../ui";
 
@@ -108,8 +121,7 @@ const Hero = () => {
         {/* soft vintage shade rising from the bottom, for the code line */}
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,rgba(20,14,8,0.82)_0%,rgba(20,14,8,0.5)_22%,rgba(20,14,8,0.18)_42%,transparent_58%)]" />
         <code className="absolute bottom-3 left-4 right-4 text-center font-mono text-[11px] leading-relaxed text-white/85 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)] sm:bottom-4 sm:text-[13px]">
-          <span className="text-emerald-300">const</span> mohan = {"{"} stack: <span className="text-white">&quot;MERN&quot;</span>, focus:{" "}
-          <span className="text-white">&quot;Agentic AI&quot;</span>, based: <span className="text-white">&quot;Odisha&quot;</span> {"}"};
+          <Scramble parts={COVER_CODE} />
         </code>
       </div>
 
