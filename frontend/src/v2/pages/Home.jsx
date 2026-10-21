@@ -157,11 +157,23 @@ const Hero = () => {
       </div>
 
       {/* Now playing */}
-      <div className="v2-rule-b px-4 py-4 sm:px-5">
+      <div className="v2-rule-b flex flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-5">
+        <div className="min-w-0">
+          <p className="v2-label flex items-center gap-2 !text-[var(--accent)]">
+            <span className="flex h-3 items-end gap-[2px]" aria-hidden>
+              <span className="w-[3px] animate-pulse rounded-sm bg-[var(--accent)] [height:60%]" />
+              <span className="w-[3px] animate-pulse rounded-sm bg-[var(--accent)] [animation-delay:150ms] [height:100%]" />
+              <span className="w-[3px] animate-pulse rounded-sm bg-[var(--accent)] [animation-delay:300ms] [height:40%]" />
+            </span>
+            Now playing
+          </p>
+          <h3 className="mt-2 text-xl font-semibold tracking-[-0.025em] sm:text-2xl">On repeat while I code</h3>
+          <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-ink-muted">The track keeping me company through late-night builds. Press play and stay a while.</p>
+        </div>
         <iframe
           title="Spotify: what I am listening to"
           src={spotifyEmbedSrc(settings?.spotifyUrl) || DEFAULT_TRACK}
-          className="h-[152px] w-full rounded-xl border-0 sm:w-1/2"
+          className="h-[152px] w-full shrink-0 rounded-xl border-0 sm:w-1/2"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           allowFullScreen
           loading="lazy"
