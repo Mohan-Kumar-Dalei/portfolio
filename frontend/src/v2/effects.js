@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** A small "+" spins open from every click / tap (styles: .v2-burst). */
+/** Two square outlines turn and open out from every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -17,7 +17,7 @@ export const useClickBurst = () => {
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 550);
+      setTimeout(() => burst.remove(), 700);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);

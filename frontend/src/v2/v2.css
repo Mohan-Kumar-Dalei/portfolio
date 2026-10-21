@@ -222,8 +222,8 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click mark: a small "+" (like the frame corners) spins open and fades,
-   with a dot that pops in the middle */
+/* Click mark: two square outlines (like the boxed layout) turn 45deg and
+   open out from the pointer, the second a beat behind the first */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -235,42 +235,26 @@ html.is-v2 ::selection {
 .v2-burst::after {
   content: "";
   position: absolute;
-}
-.v2-burst::before {
-  left: -4.5px;
-  top: -4.5px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: v2-tap-dot 0.4s ease-out forwards;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  animation: v2-tap-box 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .v2-burst::after {
-  left: -15px;
-  top: -15px;
-  width: 30px;
-  height: 30px;
-  background: linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat,
-    linear-gradient(var(--accent), var(--accent)) center / 2px 100% no-repeat;
-  animation: v2-tap-plus 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  border-width: 1px;
+  opacity: 0;
+  animation-delay: 0.08s;
 }
-@keyframes v2-tap-dot {
+@keyframes v2-tap-box {
   from {
-    transform: scale(1);
+    transform: rotate(0deg) scale(0.35);
     opacity: 1;
   }
   to {
-    transform: scale(0);
-    opacity: 0;
-  }
-}
-@keyframes v2-tap-plus {
-  from {
-    transform: rotate(0deg) scale(0.3);
-    opacity: 1;
-  }
-  to {
-    transform: rotate(90deg) scale(1.25);
+    transform: rotate(45deg) scale(1.5);
     opacity: 0;
   }
 }
