@@ -104,8 +104,10 @@ const Hero = () => {
     <div className="v2-fade">
       {/* Cover */}
       <div className="v2-rule-b relative aspect-[2.2/1] overflow-hidden bg-chip sm:aspect-[3.2/1]">
-        <img src={COVER_IMG} alt="" aria-hidden className="absolute inset-0 h-full w-full select-none object-cover object-[center_22%]" draggable={false} />
-        <code className="absolute bottom-2.5 right-2.5 hidden rounded-md border border-white/30 bg-black/35 px-2.5 py-1 font-mono text-[11px] leading-relaxed text-white/85 backdrop-blur-sm sm:block">
+        <img src={COVER_IMG} alt="" aria-hidden className="absolute inset-0 h-full w-full select-none object-cover object-[center_22%] [filter:sepia(0.12)_saturate(0.95)]" draggable={false} />
+        {/* soft vintage shade rising from the bottom, for the code line */}
+        <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,rgba(20,14,8,0.62)_0%,rgba(20,14,8,0.28)_30%,transparent_58%)]" />
+        <code className="absolute bottom-3 left-4 right-4 font-mono text-[11px] leading-relaxed text-white/80 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)] sm:bottom-4 sm:left-5 sm:text-[13px]">
           <span className="text-emerald-300">const</span> mohan = {"{"} stack: <span className="text-white">&quot;MERN&quot;</span>, focus:{" "}
           <span className="text-white">&quot;Agentic AI&quot;</span>, based: <span className="text-white">&quot;Odisha&quot;</span> {"}"};
         </code>
