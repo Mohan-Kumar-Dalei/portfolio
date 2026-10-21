@@ -90,7 +90,7 @@ const Header = ({ onSearch }) => {
   );
 };
 
-// Under the big name: how many people have visited the site.
+// Under the big name: total visits to the site.
 const VisitCount = () => {
   const counts = useVisits();
   const fmt = (n) => Number(n || 0).toLocaleString("en-IN");
@@ -101,17 +101,11 @@ const VisitCount = () => {
         <span className="relative size-2 rounded-full bg-[var(--accent)]" />
       </span>
       {counts ? (
-        <>
-          <span>
-            <span className="text-[15px] font-semibold tabular-nums text-ink">{fmt(counts.visitors)}</span> people have visited
-          </span>
-          <span aria-hidden className="text-[var(--border-strong)]">·</span>
-          <span>
-            <span className="tabular-nums text-ink">{fmt(counts.visits)}</span> visits in total
-          </span>
-        </>
+        <span>
+          <span className="text-[15px] font-semibold tabular-nums text-ink">{fmt(counts.visits)}</span> total visits
+        </span>
       ) : (
-        <span>Counting visitors…</span>
+        <span>Counting visits…</span>
       )}
     </p>
   );
