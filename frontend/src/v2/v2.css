@@ -222,8 +222,9 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click mark: particle pop. Small dots (directions set per click in
-   effects.js) fly out from the pointer, then drop a little and fade. */
+/* Click mark: sparkle star. A four-point star grows, turns and twinkles out
+   at the pointer, with two small stars blinking a beat later
+   (positions set per click in effects.js). */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -231,27 +232,30 @@ html.is-v2 ::selection {
   height: 0;
   pointer-events: none;
 }
-.v2-burst i {
+.v2-burst svg {
   position: absolute;
-  left: calc(var(--s) / -2);
-  top: calc(var(--s) / -2);
+  left: calc(var(--s) / -2 + var(--x, 0px));
+  top: calc(var(--s) / -2 + var(--y, 0px));
   width: var(--s);
   height: var(--s);
-  border-radius: 50%;
-  background: var(--c);
-  animation: v2-pop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  fill: var(--accent);
+  animation: v2-sparkle 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s) both;
 }
-@keyframes v2-pop {
+@keyframes v2-sparkle {
   0% {
-    transform: translate(0, 0) scale(0.4);
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.1) rotate(15deg);
     opacity: 1;
   }
-  55% {
-    transform: translate(calc(var(--dx) * 0.9), calc(var(--dy) * 0.9)) scale(1);
+  60% {
+    transform: scale(0.85) rotate(30deg);
     opacity: 1;
   }
   100% {
-    transform: translate(var(--dx), calc(var(--dy) + 16px)) scale(0.3);
+    transform: scale(0) rotate(60deg);
     opacity: 0;
   }
 }
