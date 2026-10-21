@@ -5,7 +5,9 @@ import { useEffect } from "react";
 
 const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** A soft ripple spreads from every click / tap (styles: .v2-burst). */
+const COLORS = ["var(--accent)", "var(--accent)", "var(--accent-soft)", "var(--text-secondary)"];
+
+/** Particle pop: a few dots burst from every click / tap (styles: .v2-burst). */
 export const useClickBurst = () => {
   useEffect(() => {
     if (reduced()) return;
@@ -16,8 +18,18 @@ export const useClickBurst = () => {
       burst.setAttribute("aria-hidden", "true");
       burst.style.left = `${e.clientX}px`;
       burst.style.top = `${e.clientY}px`;
+      for (let i = 0; i < 8; i++) {
+        const dot = document.createElement("i");
+        const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.6;
+        const dist = 22 + Math.random() * 20;
+        dot.style.setProperty("--dx", `${Math.cos(angle) * dist}px`);
+        dot.style.setProperty("--dy", `${Math.sin(angle) * dist}px`);
+        dot.style.setProperty("--s", `${4 + Math.round(Math.random() * 3)}px`);
+        dot.style.setProperty("--c", COLORS[i % COLORS.length]);
+        burst.appendChild(dot);
+      }
       document.body.appendChild(burst);
-      setTimeout(() => burst.remove(), 700);
+      setTimeout(() => burst.remove(), 750);
     };
     window.addEventListener("pointerdown", onDown, { passive: true });
     return () => window.removeEventListener("pointerdown", onDown);

@@ -222,8 +222,8 @@ html.is-v2 ::selection {
   }
 }
 
-/* Click mark: a soft ripple, a lightly filled circle that spreads out from
-   the pointer and fades, like a drop on water */
+/* Click mark: particle pop. Small dots (directions set per click in
+   effects.js) fly out from the pointer, then drop a little and fade. */
 .v2-burst {
   position: fixed;
   z-index: 9999;
@@ -231,28 +231,27 @@ html.is-v2 ::selection {
   height: 0;
   pointer-events: none;
 }
-.v2-burst::before {
-  content: "";
+.v2-burst i {
   position: absolute;
-  left: -32px;
-  top: -32px;
-  width: 64px;
-  height: 64px;
+  left: calc(var(--s) / -2);
+  top: calc(var(--s) / -2);
+  width: var(--s);
+  height: var(--s);
   border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 38%, transparent) 0%, color-mix(in srgb, var(--accent) 18%, transparent) 60%, transparent 72%);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
-  animation: v2-ripple 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  background: var(--c);
+  animation: v2-pop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-@keyframes v2-ripple {
-  from {
-    transform: scale(0);
+@keyframes v2-pop {
+  0% {
+    transform: translate(0, 0) scale(0.4);
     opacity: 1;
   }
-  60% {
-    opacity: 0.7;
+  55% {
+    transform: translate(calc(var(--dx) * 0.9), calc(var(--dy) * 0.9)) scale(1);
+    opacity: 1;
   }
-  to {
-    transform: scale(1);
+  100% {
+    transform: translate(var(--dx), calc(var(--dy) + 16px)) scale(0.3);
     opacity: 0;
   }
 }
