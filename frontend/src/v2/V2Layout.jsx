@@ -40,8 +40,8 @@ const Header = ({ onSearch }) => {
   const cell = "flex h-full items-center border-l border-border";
 
   return (
-    <header className="v2-header sticky top-0 z-50 border-b border-border">
-      <div className="v2-frame flex h-12 items-stretch">
+    <header className="v2-header sticky top-0 z-50">
+      <div className="v2-frame flex h-12 items-stretch border-b border-border">
         <Link to="/" className="flex items-center px-4 text-[15px] font-semibold tracking-[-0.02em] sm:px-5" data-testid="v2-logo">
           Mohan<span className="text-[var(--accent)]">.</span>
         </Link>
