@@ -3,15 +3,19 @@ import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, FileText, Github, Lightbulb, Link2, Linkedin, Loader2, Mail, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Check, Clock, Code2, Copy, FileText, Github, Lightbulb, Linkedin, Loader2, Mail, MapPin } from "lucide-react";
 import { useSite } from "../../context/SiteContext";
 import { pageTitle } from "../../seo";
+import { spotifyEmbedSrc } from "../../lib/spotify";
+
+// Shown when no Spotify link is set in Admin → Settings.
+const DEFAULT_TRACK = "https://open.spotify.com/embed/track/3quDxSlhbr2G922sGMcO8B?utm_source=generator";
 import { LINKS } from "../../utils/links";
 import { fileUrl } from "../../lib/api";
 import { contactSchema, sendContactMessage } from "../../lib/contact";
 import ProjectImage from "../../components/ProjectImage";
 import Avatar from "../Avatar";
-import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, SITE_HOST, STACK, STATS } from "../data";
+import { ACHIEVEMENTS, AVATAR_IMG, CERTIFICATIONS, EDUCATION, EXPERIENCE, PROFILE_FALLBACK, PROFILE_IMG, ROLES, SECTIONS, STACK, STATS } from "../data";
 import { Cells, Hatch, Section, TechLine, TimelineRow, btn, useClock } from "../ui";
 
 export const fmtDate = (d, opts = { month: "short", day: "numeric", year: "numeric" }) => (d ? new Date(d).toLocaleDateString("en-US", opts) : "");
@@ -144,15 +148,25 @@ const Hero = () => {
         <InfoRow icon={Mail} href={`mailto:${email}`}>
           {email}
         </InfoRow>
-        <InfoRow icon={Link2} href={`https://${SITE_HOST}`}>
-          {SITE_HOST}
-        </InfoRow>
-        <div className="flex items-center gap-3 sm:col-span-2">
+        <div className="flex items-center gap-3">
           <span className="grid size-7 shrink-0 place-items-center rounded-md border border-border bg-chip">
             <span className={`size-2 rounded-full ${open ? "bg-emerald-500" : "bg-amber-500"}`} />
           </span>
           <span>{settings?.availability || "Open to work"}</span>
         </div>
+      </div>
+
+      {/* Now playing */}
+      <div className="v2-rule-b px-4 py-4 sm:px-5">
+        <iframe
+          title="Spotify: what I am listening to"
+          src={spotifyEmbedSrc(settings?.spotifyUrl) || DEFAULT_TRACK}
+          className="h-[152px] w-full rounded-xl border-0 sm:w-[60%]"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+          loading="lazy"
+          data-testid="v2-spotify"
+        />
       </div>
 
       {/* Links */}
