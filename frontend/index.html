@@ -10,11 +10,11 @@
         var t = localStorage.getItem("mkd_theme_v4");
         if (t === "dark") document.documentElement.className = "dark";
       } catch (e) {}
-      // v2 (the default, minimal site): its palette and typeface from the first
-      // paint. v1 (/v1) and the admin keep the original look.
+      // v2 look (palette, typeface) from the first paint everywhere except v1
+      // (/v1), which keeps the original look.
       var p = location.pathname;
       var isV1 = p === "/v1" || p.indexOf("/v1/") === 0;
-      if (!isV1 && p.indexOf("/admin") !== 0) {
+      if (!isV1) {
         document.documentElement.classList.add("is-v2");
         document.write('<link id="v2-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" />');
       }

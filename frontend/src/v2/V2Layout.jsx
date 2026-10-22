@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ArrowUp, Contrast, Search } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
@@ -9,22 +9,6 @@ import { goToSection } from "./scroll";
 import { useVisits } from "../lib/visits";
 import { useClickBurst, useScrollReveal } from "./effects";
 import { Cells, Hatch } from "./ui";
-
-const FONT_ID = "v2-font";
-const FONT_HREF = "https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap";
-
-// v2's palette, typeface and native cursor apply while this layout is mounted.
-const useV2Document = () => {
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    root.classList.add("is-v2");
-    if (!document.getElementById(FONT_ID)) {
-      const link = Object.assign(document.createElement("link"), { id: FONT_ID, rel: "stylesheet", href: FONT_HREF });
-      document.head.appendChild(link);
-    }
-    return () => root.classList.remove("is-v2");
-  }, []);
-};
 
 const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
@@ -134,7 +118,6 @@ const Footer = () => (
 );
 
 const V2Layout = () => {
-  useV2Document();
   useClickBurst();
   useScrollReveal();
   const [searchOpen, setSearchOpen] = useState(false);

@@ -45,6 +45,16 @@ html.is-v2 body {
   font-feature-settings: normal;
   transition: none;
 }
+/* the admin and shared widgets use v1 classes; keep them plain here */
+html.is-v2 .font-display {
+  font-family: inherit;
+  letter-spacing: -0.03em;
+}
+html.is-v2 .text-gradient {
+  background: none;
+  color: var(--text);
+  -webkit-text-fill-color: currentColor;
+}
 html.is-v2 .font-mono {
   font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }

@@ -9,6 +9,7 @@ import SiteWidgets from "./components/SiteWidgets";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { V2Layout, Home as V2Home, Blog as V2Blog, BlogPost as V2BlogPost, Project as V2Project } from "./v2";
 import { isV1Path } from "./v2/VersionSwitch";
+import { useSiteLook } from "./v2/look";
 
 /*
  * v2, the minimal site, is the default and owns the public URLs (/, /blog,
@@ -37,10 +38,12 @@ const page = (Page) => (
   </Suspense>
 );
 
-// v1's custom cursor and film grain: on v1 and the admin only.
+// v1's custom cursor and film grain, on v1 only. Everything else (the
+// public v2 site and the admin) has the v2 look and the normal cursor.
 const V1Chrome = () => {
   const { pathname } = useLocation();
-  if (!isV1Path(pathname) && !pathname.startsWith("/admin")) return null;
+  useSiteLook();
+  if (!isV1Path(pathname)) return null;
   return (
     <>
       <Suspense fallback={null}>

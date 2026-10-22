@@ -190,32 +190,50 @@ const AdminDashboard = () => {
   return (
     <PageTransition>
       <Helmet><title>Dashboard | Mohan Kumar Dalei</title><meta name="robots" content="noindex" /></Helmet>
-      <div className="min-h-screen bg-base flex flex-col md:flex-row">
-        <aside className="md:w-64 border-b md:border-b-0 md:border-r border-border p-6 flex md:flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 font-display text-xl font-bold mb-10"><LayoutDashboard size={20} className="text-primary" /><span className="text-gradient">Admin</span></div>
-            <nav className="flex md:flex-col gap-2 flex-wrap">
+      <div className="min-h-screen bg-base md:flex md:items-start">
+        {/* Sidebar stays put while the content scrolls */}
+        <aside className="sticky top-0 z-30 flex justify-between gap-4 border-b border-border bg-base px-4 py-3 md:h-screen md:w-60 md:shrink-0 md:flex-col md:overflow-y-auto md:border-b-0 md:border-r md:px-4 md:py-6">
+          <div className="min-w-0">
+            <div className="mb-0 flex items-center gap-2 px-2 text-[15px] font-semibold tracking-[-0.02em] md:mb-8">
+              <LayoutDashboard size={16} className="text-primary" />
+              Mohan<span className="text-primary">.</span> <span className="font-normal text-ink-muted">admin</span>
+            </div>
+            <nav className="mt-3 flex gap-1 overflow-x-auto md:mt-0 md:flex-col">
               {tabs.map((t) => {
                 const Icon = t.icon; const active = tab === t.id;
                 const count = t.id === "messages" ? messages.length : t.id === "projects" ? projects.length : t.id === "blogs" ? blogs.length : t.id === "testimonials" ? testimonials.length : t.id === "chats" ? chatlogs.length : null;
                 return (
-                  <button key={t.id} onClick={() => setTab(t.id)} data-testid={`admin-tab-${t.id}`} className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors duration-200 ${active ? "bg-chip text-ink border border-border" : "text-ink-muted hover:text-ink"}`}>
-                    <Icon size={18} /><span className="hidden sm:inline">{t.label}</span>
+                  <button key={t.id} onClick={() => setTab(t.id)} data-testid={`admin-tab-${t.id}`} className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${active ? "bg-chip font-medium text-ink" : "text-ink-muted hover:bg-chip hover:text-ink"}`}>
+                    <Icon size={16} className={active ? "text-primary" : ""} /><span className="hidden sm:inline">{t.label}</span>
                     {count !== null && <span className="ml-auto hidden md:inline text-xs font-mono text-ink-muted">{count}</span>}
                   </button>
                 );
               })}
             </nav>
           </div>
-          <div className="md:mt-auto">
-            <div className="hidden md:block text-xs text-ink-muted font-mono mb-3 truncate">{user?.email}</div>
-            <button onClick={doLogout} className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm text-ink-muted hover:text-red-400 transition-colors duration-200" data-testid="admin-logout"><LogOut size={18} /><span className="hidden sm:inline">Logout</span></button>
+          <div className="flex shrink-0 items-start gap-2 md:mt-auto md:block md:space-y-4">
+            {/* Both versions share this content; open either to check it */}
+            <div className="hidden md:block">
+              <div className="mb-2 px-2 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-muted">View site</div>
+              <div className="grid grid-cols-2 gap-1.5 px-1">
+                <a href="/" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-2 py-2 text-xs transition-colors hover:bg-chip" data-testid="admin-view-v2">
+                  v2 <ExternalLink size={12} />
+                </a>
+                <a href="/v1" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 rounded-lg border border-border px-2 py-2 text-xs transition-colors hover:bg-chip" data-testid="admin-view-v1">
+                  v1 <ExternalLink size={12} />
+                </a>
+              </div>
+            </div>
+            <div className="border-border md:border-t md:pt-4">
+              <div className="mb-2 hidden truncate px-2 font-mono text-xs text-ink-muted md:block">{user?.email}</div>
+              <button onClick={doLogout} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-ink-muted transition-colors duration-200 hover:bg-chip hover:text-rose-500" data-testid="admin-logout"><LogOut size={16} /><span className="hidden sm:inline">Logout</span></button>
+            </div>
           </div>
         </aside>
 
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="font-display text-3xl font-semibold">{tabs.find((t) => t.id === tab)?.label}</h1>
+        <main className="min-w-0 flex-1 p-5 md:p-10">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
+            <h1 className="text-2xl font-semibold tracking-[-0.03em] md:text-[1.75rem]">{tabs.find((t) => t.id === tab)?.label}</h1>
             {tab === "projects" && <AddBtn onClick={() => openProjectModal()} label="Add Project" testid="admin-add-project" />}
             {tab === "blogs" && (
               <div className="flex flex-wrap items-center justify-end gap-2">
